@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="co.jratil.blogauth.mapper.AuthorMapper">
+    <resultMap id="BaseResultMap" type="co.jratil.blogapi.entity.dataobject.Author">
+        <constructor>
+            <idArg column="author_id" javaType="java.lang.Integer" jdbcType="INTEGER"/>
+            <arg column="author_name" javaType="java.lang.String" jdbcType="VARCHAR"/>
+            <arg column="author_account" javaType="java.lang.String" jdbcType="VARCHAR"/>
+            <arg column="author_password" javaType="java.lang.String" jdbcType="VARCHAR"/>
+            <arg column="author_gender" javaType="java.lang.Integer" jdbcType="TINYINT"/>
+            <arg column="author_birthday" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
+            <arg column="author_avatar" javaType="java.lang.String" jdbcType="VARCHAR"/>
+            <arg column="author_lock" javaType="java.lang.Boolean" jdbcType="TINYINT"/>
+            <arg column="create_time" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
+        </constructor>
+    </resultMap>
+    <sql id="Base_Column_List">
+        author_id,
+		author_name,
+		author_account,
+		author_password,
+		author_gender,
+		author_birthday,
+		author_avatar,
+		author_lock,
+		create_time
+    </sql>
+
+    <insert id="insertAuthor" parameterType="co.jratil.blogapi.entity.dataobject.Author"
+            useGeneratedKeys="true" keyProperty="authorId">
+
+        insert ignore into t_author
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="authorId != null">
+                author_id,
+            </if>
+            <if test="authorName != null">
+                author_name,
+            </if>
+            <if test="authorAccount != null">
+                author_account,
+            </if>
+            <if test="authorPassword != null">
+                author_password,
+            </if>
+            <if test="authorGender != null">
+                author_gender,
+            </if>
+            <if test="authorBirthday != null">
+                author_birthday,
+            </if>
+            <if test="authorAvatar != null">
+                author_avatar,
+            </if>
+            <if test="authorLock != null">
+                author_lock,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="authorId != null">
+                #{authorId},
+            </if>
+            <if test="authorName != null">
+                #{authorName},
+            </if>
+            <if test="authorAccount != null">
+                #{authorAccount},
+            </if>
+            <if test="authorPassword != null">
+                #{authorPassword},
+            </if>
+            <if test="authorGender != null">
+                #{authorGender},
+            </if>
+            <if test="authorBirthday != null">
+                #{authorBirthday},
+            </if>
+            <if test="authorAvatar != null">
+                #{authorAvatar},
+            </if>
+            <if test="authorLock != null">
+                #{authorLock},
+            </if>
+            <if test="createTime != null">
+                #{createTime},
+            </if>
+        </trim>
+    </insert>
+
+    <insert id="insertRole" parameterType="co.jratil.blogapi.entity.dataobject.AuthorRole">
+        insert into t_author_role
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="authorId != null">
+                author_id,
+            </if>
+            <if test="role != null">
+                role,
+            </if>
+            <if test="lastUpdate != null">
+                last_update,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="authorId != null">
+                #{authorId},
+            </if>
+            <if test="role != null">
+                #{role},
+            </if>
+            <if test="lastUpdate != null">
+                #{lastUpdate},
+            </if>
+        </trim>
+    </insert>
+
+    <insert id="insertCategory" parameterType="co.jratil.blogapi.entity.dataobject.ArticleCategory">
+        insert into t_article_category
+            (author_id, category_name, category_visible, create_time)
+        VALUES (#{authorId}, #{categoryName}, #{categoryVisible}, #{createTime})
+    </insert>
+
+</mapper>
