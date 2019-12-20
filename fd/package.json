@@ -1,0 +1,13 @@
+{
+    "name": "fd",
+    "version": "1.0.0",
+    "main": "index.js",
+    "license": "MIT",
+    "scripts": {
+        "start": "umi dev",
+        "build": "umi build"
+    },
+    "devDependencies": {
+        "umi": "^2.12.7"
+    }
+}
