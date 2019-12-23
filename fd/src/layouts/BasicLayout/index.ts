@@ -1,1 +1,3 @@
-export { default as BasicLayout } from './BasicLayout'
+import BasicLayout from './BasicLayout'
+
+export default BasicLayout

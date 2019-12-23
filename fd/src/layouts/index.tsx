@@ -1,6 +1,8 @@
 import React from 'react'
 import BasicLayout from './BasicLayout'
 
+export const ctx = React.createContext('')
+
 const PATH_WITHOUT_LAYOUT = []
 
 const Layout = ({ location, children }) => {
@@ -9,7 +11,11 @@ const Layout = ({ location, children }) => {
         return <>{children}</>
     }
 
-    return <BasicLayout> {children} </BasicLayout>
+    return (
+        <ctx.Provider value={location.pathname}>
+            <BasicLayout> {children} </BasicLayout>
+        </ctx.Provider>
+    )
 }
 
 export default Layout

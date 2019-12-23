@@ -1,0 +1,32 @@
+@import '../../themes/var.less';
+
+@header-margin-left: 48px;
+
+.header_wrapper {
+    position: fixed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #decafb;
+    top: 0;
+    left: 0;
+    composes: base-border;
+    width: 100%;
+    height: 80px;
+    padding: 10px @header-margin-left;
+    font-size: 24px;
+    line-height: 60px;
+    .logo {
+        position: absolute;
+        width: 220px;
+        height: 60px;
+        left: @header-margin-left;
+    }
+    .menu {
+        padding-right: 16px;
+        &.active {
+             color: #ffffff;
+
+        }
+    }
+}
