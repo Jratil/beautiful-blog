@@ -1,51 +1,39 @@
 import React, { memo, useContext } from 'react'
 import { Link } from 'umi'
-import { Icon } from 'antd'
+import { useFullscreen } from '@umijs/hooks'
+import { Icon, Layout, Menu } from 'antd'
 import styles from './index.less'
-import LOGO from '@/assets/logo.png'
 import { ctx } from '../index'
-import classnames from 'classnames'
-const routes = [
-    {
-        path: '/',
-        type: 'home',
-        title: '首页'
-    },
-    {
-        path: '/about',
-        type: 'rocket',
-        title: '关于'
-    }
-]
+import { PATH_WITH_LAYOUT } from '../index'
 
-const activeStyle = {
-    color: 'red'
-}
+const { Header } = Layout
+const MenuItem = Menu.Item
 
-const Header = props => {
+const CustomHeader = props => {
     const pathname = useContext(ctx)
-    const isActive = (path: string) => pathname === path
+    const { isFullscreen, toggleFull } = useFullscreen({ dom: document.body })
     return (
-        <div className={styles.header_wrapper}>
-            <img className={styles.logo} src={LOGO} alt='logo' />
-            {routes.map(r => (
-                <Link
-                    key={r.path}
-                    to={r.path}
-                    className={classnames(
-                        styles.menu,
-                        isActive(r.path) ? styles.active : void 0
-                    )}
-                >
-                    <Icon
-                        type={r.type}
-                        theme={isActive(r.path) ? 'filled' : 'twoTone'}
-                    />
-                    <span>{r.title}</span>
-                </Link>
-            ))}
-        </div>
+        <Header>
+            <div className={styles.logo} />
+            <Icon
+                type={isFullscreen ? 'fullscreen-exit' : 'fullscreen'}
+                onClick={toggleFull}
+                className={styles.fullscreen}
+            />
+            <Menu
+                theme='dark'
+                mode='horizontal'
+                selectedKeys={[pathname]}
+                style={{ lineHeight: '64px' }}
+            >
+                {PATH_WITH_LAYOUT.map(p => (
+                    <MenuItem key={p.path}>
+                        <Link to={p.path}>{p.title}</Link>
+                    </MenuItem>
+                ))}
+            </Menu>
+        </Header>
     )
 }
 
-export default memo(Header)
+export default memo(CustomHeader)

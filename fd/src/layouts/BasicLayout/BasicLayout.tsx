@@ -1,30 +1,13 @@
 import React from 'react'
-import { Link } from 'umi'
 import styles from './index.less'
-import { PATH_WITH_LAYOUT } from '../index'
-import { Layout, Menu, Breadcrumb, Icon } from 'antd'
-
-const { Header, Content, Footer, Sider } = Layout
-const MenuItem = Menu.Item
+import { Layout, Breadcrumb, Icon } from 'antd'
+import Header from './Header'
+const { Content, Footer, Sider } = Layout
 
 const BasicLayout = ({ children, ...restProps }) => {
     return (
         <Layout>
-            <Header>
-                <div className={styles.logo} />
-                <Menu
-                    theme='dark'
-                    mode='horizontal'
-                    defaultSelectedKeys={['/']}
-                    style={{ lineHeight: '64px' }}
-                >
-                    {PATH_WITH_LAYOUT.map(p => (
-                        <MenuItem key={p.path}>
-                            <Link to={p.path}>{p.title}</Link>
-                        </MenuItem>
-                    ))}
-                </Menu>
-            </Header>
+            <Header />
             <Content style={{ padding: '0 50px' }}>
                 <Breadcrumb style={{ margin: '16px 0' }}>
                     <Breadcrumb.Item>Home</Breadcrumb.Item>
