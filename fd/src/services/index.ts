@@ -25,7 +25,14 @@ const codeMessage = {
 }
 
 instance.interceptors.response.use(
-    res => res.data,
+    res => {
+        const { code, message, data } = res.data
+        if (code === 0) return data
+        notification.error({
+            message: `出错了5555，error code: ${code}`,
+            description: message
+        })
+    },
     err => {
         const { status, statusText } = err.response
         const errorText = codeMessage[status] || statusText
