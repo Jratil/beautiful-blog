@@ -4,17 +4,19 @@ import { Reducer } from 'redux'
 
 const { articleGet } = api
 
-interface IArticle {
-    title: string
-    desc: string
-    like: number
+export interface IArticle {
+    articleId: number
+    articleTitle: string
+    articleSubtitle: string
+    articleLike: number
     comments: number
     read: number
     author_id: number
-    author_name: string
+    authorName: string
+    lastUpdate: string
 }
 
-interface IHomeState {
+export interface IHomeState {
     articles: IArticle[]
 }
 
@@ -37,8 +39,7 @@ const Main: IModel = {
     effects: {
         *getArticles({ payload }, { call, put }) {
             const articles = yield call(articleGet, payload)
-            // yield put({ articles })
-            console.log(articles)
+            yield put({ type: 'updateState', payload: { articles } })
         }
     },
     reducers: {

@@ -1,0 +1,42 @@
+@import '~@/themes/var.less';
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.articles_wrapper {
+    width: 960px;
+}
+.article_wrapper {
+    border-radius: 4px;
+    compose: base-border;
+    background-color: #fff;
+    margin-bottom: 16px;
+    width: 640px;
+    padding: 10px;
+    .card_title {
+        font-size: 16px;
+        font-weight: 700;
+        line-height: 2;
+    }
+    .card_subtitle {
+        font-size: 14px;
+        line-height: 2;
+    }
+    .card_footer {
+        margin-top: 10px;
+        overflow: hidden;
+    }
+    .fl {
+        float: left;
+        margin-right: 12px;
+    }
+    .fr {
+        float: right;
+        margin-left: 12px;
+    }
+    .card_icon {
+        font-size: 16px;
+        margin-right: 8px;
+    }
+}
