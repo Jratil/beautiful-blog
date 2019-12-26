@@ -3,6 +3,7 @@ import { connect, useDispatch } from 'dva'
 import { Col, Row } from 'antd'
 import { XPagination } from '@/components'
 import Card from './components/Card'
+import SideCard from './components/SideCard'
 import styles from './index.less'
 import { connectState } from '@/models/connect'
 import { IArticle } from './model'
@@ -24,7 +25,6 @@ const initParams = {
 const Home: React.FC<IProps> = ({ articles }) => {
     const dispatch = useDispatch()
     const [params, setParams] = useState<IParams>(initParams)
-    console.log(articles)
 
     useEffect(() => {
         getArticles()
@@ -38,17 +38,30 @@ const Home: React.FC<IProps> = ({ articles }) => {
         dispatch({ type: 'home/getArticles', payload: newParams })
     }
 
+    const handleChange = (...props) => {
+        console.log(props)
+    }
+
+    const handleSizeChange = (...props) => {
+        console.log(props)
+    }
+
     return (
-        <div className={styles.wrapper}>
-            <div style={{ width: 960 }}>
+        <div>
+            <div className={styles.wrapper}>
                 <div className={styles.articles_wrapper}>
                     {articles.map(r => (
-                        <Card data={r} />
+                        <Card data={r} key={r.articleId} />
                     ))}
                 </div>
-                <div></div>
+                <div className={styles.side_wrapper}>
+                    <SideCard>654</SideCard>
+                </div>
             </div>
-            <XPagination />
+            <XPagination
+                onChange={handleChange}
+                onShowSizeChange={handleSizeChange}
+            />
         </div>
     )
 }

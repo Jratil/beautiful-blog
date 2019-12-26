@@ -1,4 +1,6 @@
 import React from 'react'
+import { ConfigProvider } from 'antd'
+import zhCN from 'antd/es/locale/zh_CN'
 import BasicLayout from './BasicLayout'
 
 export const ctx = React.createContext('')
@@ -51,7 +53,9 @@ const Layout = ({ location, children }) => {
 
     return (
         <ctx.Provider value={location.pathname}>
-            <BasicLayout> {children} </BasicLayout>
+            <ConfigProvider locale={zhCN}>
+                <BasicLayout> {children} </BasicLayout>
+            </ConfigProvider>
         </ctx.Provider>
     )
 }
