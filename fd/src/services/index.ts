@@ -45,7 +45,7 @@ const gen = (params: string) => {
     const [method, url] = params.split(' ')
 
     return (opt: any) => {
-        const options = method === 'GET' ? { params: opt } : { body: opt }
+        const options = method === 'GET' ? { params: opt } : { data: opt }
         return instance({ method, url, ...options })
     }
 }

@@ -1,5 +1,6 @@
 import React from 'react'
 import { ConfigProvider } from 'antd'
+import styles from './index.less'
 import zhCN from 'antd/es/locale/zh_CN'
 import BasicLayout from './BasicLayout'
 
@@ -43,12 +44,12 @@ export const PATH_WITH_LAYOUT = [
     }
 ]
 
-const PATH_WITHOUT_LAYOUT = ['login', 'registry']
+const PATH_WITHOUT_LAYOUT = ['/login', '/registry']
 
 const Layout = ({ location, children }) => {
     const { pathname } = location
     if (PATH_WITHOUT_LAYOUT.includes(pathname)) {
-        return <>{children}</>
+        return <div className={styles.app_wrapper}>{children}</div>
     }
 
     return (

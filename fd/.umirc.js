@@ -1,7 +1,7 @@
 export default {
     proxy: {
         '/api': {
-            target: 'http://api.jratil.co:8866/',
+            target: 'http://120.79.172.32:8000/',
             changeOrigin: true,
             pathRewrite: {
                 '^/api': ''
