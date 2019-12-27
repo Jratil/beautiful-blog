@@ -1,4 +1,5 @@
 import { IHomeState } from '@/pages/index/model.ts'
+import { IWriteState } from '@/pages/write/model.ts'
 import { WrappedFormUtils } from 'antd/lib/form/Form'
 
 export interface Loading {
@@ -12,6 +13,7 @@ export interface Loading {
 export interface connectState {
     loading: Loading
     home: IHomeState
+    write: IWriteState
 }
 
 export interface connectProps {

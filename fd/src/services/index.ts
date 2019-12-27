@@ -53,7 +53,7 @@ const gen = (params: string) => {
 
     return (opt: any) => {
         const options = method === 'GET' ? { params: opt } : { data: opt }
-        return instance({ method, url, ...options })
+        return instance({ method, url: `/api${url}`, ...options })
     }
 }
 
