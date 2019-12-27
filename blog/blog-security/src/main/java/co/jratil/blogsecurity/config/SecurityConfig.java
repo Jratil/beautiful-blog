@@ -51,6 +51,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // 放行的api
                 .antMatchers("/auth/login").permitAll()
                 .antMatchers("/auth/register").permitAll()
+                .antMatchers("/update/password").permitAll()
+                .antMatchers("/sms/**").permitAll()
                 // swagger start，放行 swagger 相关资源
                 .antMatchers("/swagger").permitAll()
                 .antMatchers("/swagger-ui.html").permitAll()
@@ -63,7 +65,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // swagger end
                 // 全部拦截
                 .anyRequest().authenticated()
-
                 .and()
                 // 添加自定义的过滤器
                 .addFilter(new LoginAuthenticationFilter(authenticationManager()))

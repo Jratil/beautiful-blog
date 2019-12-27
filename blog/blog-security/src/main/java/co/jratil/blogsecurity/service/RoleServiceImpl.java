@@ -4,7 +4,7 @@ import co.jratil.blogapi.entity.dataobject.Author;
 import co.jratil.blogapi.entity.dataobject.AuthorRole;
 import co.jratil.blogapi.exception.GlobalException;
 import co.jratil.blogsecurity.mapper.RoleMapper;
-import co.jratil.blogapi.response.ResponseEnum;
+import co.jratil.blogapi.enums.ResponseEnum;
 import co.jratil.blogapi.service.RoleService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;

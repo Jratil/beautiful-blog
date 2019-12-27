@@ -1,17 +1,14 @@
 package co.jratil.blogcontroller.controller.auth;
 
-import co.jratil.blogapi.constant.CookieConstant;
 import co.jratil.blogapi.entity.PageParam;
 import co.jratil.blogcontroller.controller.AbstractController;
 import co.jratil.blogapi.entity.dto.AuthorDTO;
 import co.jratil.blogapi.entity.dto.AuthorForm;
-import co.jratil.blogapi.response.ResponseEnum;
+import co.jratil.blogapi.enums.ResponseEnum;
 import co.jratil.blogapi.response.ResponseVO;
 import co.jratil.blogapi.response.ResponseUtils;
 import co.jratil.blogapi.service.AuthorService;
-import co.jratil.blogapi.utils.SessionUtil;
 import co.jratil.blogapi.exception.GlobalException;
-import com.alibaba.druid.util.DruidWebUtils;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
@@ -25,11 +22,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import java.util.UUID;
 
 @Api(value = "AuthorController", tags = "1-用户相关的接口")
 @Slf4j
@@ -126,7 +120,7 @@ public class AuthorController extends AbstractController {
         return ResponseUtils.success(result);
     }
 
-    @ApiOperation(value = "修改资料", notes = "用户修改资料", httpMethod = "PUT", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ApiOperation(value = "修改资料", notes = "用户修改资料", httpMethod = "PUT")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "authorDTO", value = "修改信息所需要穿的json", dataTypeClass = AuthorDTO.class, example = "{\"name\":\"1\",\n\"email\":\"123\",\n\"password\":\"123\",\n\"verify-code\":\"1234\"}", paramType = "body")
     })
