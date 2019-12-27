@@ -1,5 +1,6 @@
 import { Model, Effect } from 'dva'
 import api from '@/services'
+import { router } from 'umi'
 
 interface IModel extends Model {
     namespace: 'login'
@@ -15,8 +16,11 @@ const LoginModel: IModel = {
     state: {},
     effects: {
         *login({ payload, callback }, { call, put }) {
-            // console.log(payload)
-            yield call(authLogin, payload)
+            const res = yield call(authLogin, payload)
+            if (res) {
+                router.push('/')
+                if (callback) callback()
+            }
         }
     }
 }
