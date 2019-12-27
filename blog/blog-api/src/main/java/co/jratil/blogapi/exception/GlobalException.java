@@ -1,6 +1,6 @@
 package co.jratil.blogapi.exception;
 
-import co.jratil.blogapi.response.ResponseEnum;
+import co.jratil.blogapi.enums.ResponseEnum;
 
 /**
  * @author jun
