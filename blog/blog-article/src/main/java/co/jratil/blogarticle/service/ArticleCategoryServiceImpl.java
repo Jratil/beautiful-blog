@@ -4,7 +4,7 @@ import co.jratil.blogapi.entity.PageParam;
 import co.jratil.blogapi.wrapper.VisibleWrapper;
 import co.jratil.blogapi.entity.dataobject.ArticleCategory;
 import co.jratil.blogapi.exception.GlobalException;
-import co.jratil.blogapi.response.ResponseEnum;
+import co.jratil.blogapi.enums.ResponseEnum;
 import co.jratil.blogapi.service.AbstractService;
 import co.jratil.blogapi.service.ArticleCategoryService;
 import co.jratil.blogarticle.mapper.ArticleCategoryMapper;

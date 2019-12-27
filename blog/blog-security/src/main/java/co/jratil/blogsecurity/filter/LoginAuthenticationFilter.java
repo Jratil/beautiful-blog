@@ -1,7 +1,7 @@
 package co.jratil.blogsecurity.filter;
 
 import co.jratil.blogapi.exception.GlobalException;
-import co.jratil.blogapi.response.ResponseEnum;
+import co.jratil.blogapi.enums.ResponseEnum;
 import co.jratil.blogapi.response.ResponseUtils;
 import co.jratil.blogsecurity.constant.JwtConstant;
 import co.jratil.blogsecurity.entity.LoginEntity;
@@ -17,6 +17,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -70,7 +71,12 @@ public class LoginAuthenticationFilter extends UsernamePasswordAuthenticationFil
                 .collect(Collectors.toList());
 
         String token = JwtUtils.createToken(userDetails.getAuthorId(), roles, rememberMe);
-        response.setHeader(JwtConstant.TOKEN_HEADER, token);
+        // 把 token 设置到cookie中
+        // response.setHeader(JwtConstant.TOKEN_HEADER, token);
+        Cookie cookie = new Cookie(JwtConstant.TOKEN_HEADER, token);
+        cookie.setMaxAge((int) JwtConstant.EXPIRATION);
+        cookie.setPath("/");
+        response.addCookie(cookie);
         response.setContentType(JwtConstant.CHARACTER_UTF_8);
         ResponseUtils.writeResSuccess(response);
     }

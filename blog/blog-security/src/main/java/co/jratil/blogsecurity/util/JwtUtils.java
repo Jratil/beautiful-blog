@@ -29,7 +29,6 @@ public class JwtUtils {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
     private static byte[] bytes = secretKey.getBytes();
