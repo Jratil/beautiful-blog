@@ -1,5 +1,6 @@
 package co.jratil.blogapi.response;
 
+import co.jratil.blogapi.enums.ResponseEnum;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.servlet.http.HttpServletResponse;

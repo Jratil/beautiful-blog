@@ -1,7 +1,7 @@
 package co.jratil.blogapi.exception;
 
 
-import co.jratil.blogapi.response.ResponseEnum;
+import co.jratil.blogapi.enums.ResponseEnum;
 
 /**
  * @date 2019-08-13 23:15
