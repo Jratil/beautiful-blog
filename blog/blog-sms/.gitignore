@@ -3,7 +3,9 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**
 !**/src/test/**
+
 /src/main/resources/privateKey/SMSKey.properties
+
 /src/main/resources/application.yml
 
 ### STS ###
