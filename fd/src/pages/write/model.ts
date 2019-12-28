@@ -16,23 +16,24 @@ interface IModel extends Model {
     state: any
     effects: {
         getCategory: Effect
+        addArticle: Effect
     }
 }
 
-const { categoryGet } = api
+const { categoryGet, articleAdd } = api
 const WriteModel: IModel = {
     namespace: 'write',
     state: {
         categories: []
     },
     effects: {
-        *getCategory({ payload, callback }, { call, put }) {
+        *getCategory({ payload }, { call, put }) {
             const categories = yield call(categoryGet, payload)
             yield put({ type: 'updateState', payload: { categories } })
-            // if (res) {
-            // router.push('/')
-            // if (callback) callback()
-            // }
+        },
+        *addArticle({ payload, callback }, { call }) {
+            const res = yield call(articleAdd, payload)
+            if (res && callback) callback()
         }
     },
     reducers: {

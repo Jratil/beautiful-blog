@@ -15,5 +15,12 @@ export default {
     categoryAdd: 'POST /category/add',
     categoryDelete: 'DELETE /category/delete/:categoryId',
     categoryGet: 'POST /category/page/:authorId',
-    categoryUpdate: 'PUT /category/update'
+    categoryUpdate: 'PUT /category/update',
+
+    // article
+    articleAdd: 'POST /article/add',
+    articleDelete: 'POST /article/delete',
+    articleLike: 'POST /article/like/:articleId',
+    articleDislike: 'DELETE /article/like/:articleId',
+    articleEdit: 'PUT /article/update/:articleId'
 }
