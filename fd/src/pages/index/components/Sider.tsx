@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Avatar, Divider, Button } from 'antd'
+import { Avatar, Divider, Button, Input } from 'antd'
 import { connect } from 'dva'
 import styles from '../index.less'
 import { ICategory } from '@/pages/write/model'
@@ -9,13 +9,12 @@ interface IProps extends connectProps {
     categories: ICategory[]
 }
 
+const { Search } = Input
 const Sider: React.FC<IProps> = ({ categories }) => {
     const handleCategory = () => {}
     return (
         <div className={styles.sider_wrapper}>
-            <Avatar size='large' icon='user' />
-            <span className={styles.name}>Micah</span>
-            <Divider />
+            <Search onSearch={value => console.log(value)} />
             <div className={styles.tag_wrapper}>
                 {categories.map(r => (
                     <Button shape='round' key={r.id} className={styles.tag} onClick={handleCategory}>
