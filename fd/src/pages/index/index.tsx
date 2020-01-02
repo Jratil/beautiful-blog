@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react'
 import { connect, useDispatch } from 'dva'
-import { Col, Row } from 'antd'
-import { XPagination } from '@/components'
-import Card from './components/Card'
-import SideCard from './components/SideCard'
+import Sider from './components/Sider'
 import styles from './index.less'
-import { connectState } from '@/models/connect'
+import { connectState, connectProps } from '@/models/connect'
 import { IArticle } from './model'
+import { ICategory } from '@/pages/category/model'
+import ArticleList from './components/ArticleList'
 
-interface IProps {
+interface IProps extends connectProps {
     articles: IArticle[]
+    categories: ICategory[]
 }
 
 interface IParams {
@@ -22,12 +22,13 @@ const initParams = {
     count: 10
 }
 
-const Home: React.FC<IProps> = ({ articles }) => {
+const Home: React.FC<IProps> = ({ articles, categories }) => {
     const dispatch = useDispatch()
     const [params, setParams] = useState<IParams>(initParams)
 
     useEffect(() => {
         getArticles()
+        getCategories()
     }, [])
 
     useEffect(() => {
@@ -37,35 +38,21 @@ const Home: React.FC<IProps> = ({ articles }) => {
     const getArticles = (newParams: IParams = params) => {
         dispatch({ type: 'home/getArticles', payload: newParams })
     }
-
-    const handleChange = (...props) => {
-        console.log(props)
-    }
-
-    const handleSizeChange = (...props) => {
-        console.log(props)
+    const getCategories = () => {
+        dispatch({ type: 'category/get' })
     }
 
     return (
-        <div>
-            <div className={styles.wrapper}>
-                <div className={styles.articles_wrapper}>
-                    {articles.map(r => (
-                        <Card data={r} key={r.articleId} />
-                    ))}
-                </div>
-                <div className={styles.side_wrapper}>
-                    <SideCard>654</SideCard>
-                </div>
+        <div className={styles.wrapper}>
+            <ArticleList data={articles} />
+            <div className={styles.side_wrapper}>
+                <Sider />
             </div>
-            <XPagination
-                onChange={handleChange}
-                onShowSizeChange={handleSizeChange}
-            />
         </div>
     )
 }
 
-export default connect(({ home }: connectState) => ({
-    articles: home.articles
+export default connect(({ home, category }: connectState) => ({
+    articles: home.articles,
+    categories: category.categories
 }))(Home)
