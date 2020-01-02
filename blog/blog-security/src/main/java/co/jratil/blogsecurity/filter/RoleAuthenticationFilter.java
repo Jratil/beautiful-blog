@@ -1,7 +1,5 @@
 package co.jratil.blogsecurity.filter;
 
-import co.jratil.blogapi.exception.GlobalException;
-import co.jratil.blogapi.response.ResponseEnum;
 import co.jratil.blogsecurity.constant.JwtConstant;
 import co.jratil.blogsecurity.util.JwtUtils;
 import org.slf4j.Logger;

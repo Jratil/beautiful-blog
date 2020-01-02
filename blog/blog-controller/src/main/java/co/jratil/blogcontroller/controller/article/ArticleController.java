@@ -5,7 +5,7 @@ import co.jratil.blogapi.entity.dataobject.Article;
 import co.jratil.blogapi.entity.dataobject.ArticleCategory;
 import co.jratil.blogapi.entity.dto.ArticleDTO;
 import co.jratil.blogapi.exception.GlobalException;
-import co.jratil.blogapi.response.ResponseEnum;
+import co.jratil.blogapi.enums.ResponseEnum;
 import co.jratil.blogapi.response.ResponseVO;
 import co.jratil.blogapi.response.ResponseUtils;
 import co.jratil.blogapi.service.ArticleCategoryService;
