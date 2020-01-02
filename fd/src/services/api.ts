@@ -6,6 +6,8 @@ export default {
     authRegistry: 'POST /auth/register',
     authUpdate: 'PUT /auth/update',
     authUpdatePassword: 'PUT /auth/update/password',
+    authQueryByAccount: 'GET /auth/query/account/:account',
+    authQueryById: 'GET /auth/query/account/:id',
 
     // email
     emailSend: 'POST /email/send_code',

@@ -27,17 +27,17 @@ const Home: React.FC<IProps> = ({ articles, categories }) => {
     const [params, setParams] = useState<IParams>(initParams)
 
     useEffect(() => {
-        getArticles()
+        // getArticles()
         getCategories()
     }, [])
 
-    useEffect(() => {
-        getArticles()
-    }, [params])
+    // useEffect(() => {
+    //     getArticles()
+    // }, [params])
 
-    const getArticles = (newParams: IParams = params) => {
-        dispatch({ type: 'home/getArticles', payload: newParams })
-    }
+    // const getArticles = (newParams: IParams = params) => {
+    //     dispatch({ type: 'home/getArticles', payload: newParams })
+    // }
     const getCategories = () => {
         dispatch({ type: 'category/get' })
     }

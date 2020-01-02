@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { notification } from 'antd'
 import api from './api'
+import Cookies from 'js-cookie'
 
 const instance = axios.create({
     // baseURL: 'http://api.jratil.co:8866/'
@@ -23,6 +24,13 @@ const codeMessage = {
     503: '服务不可用，服务器暂时过载或维护',
     504: '网关超时'
 }
+
+export const AUTHORIZATION_KEY = 'Authorization'
+
+instance.interceptors.request.use(req => {
+    req.headers.Authorization = Cookies.get(AUTHORIZATION_KEY)
+    return req
+})
 
 instance.interceptors.response.use(
     res => {
