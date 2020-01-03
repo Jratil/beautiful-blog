@@ -1,6 +1,7 @@
 import { Model, Effect } from 'dva'
 import Cookies from 'js-cookie'
 import api, { AUTHORIZATION_KEY } from '@/services'
+import { router } from 'umi'
 
 export interface IUserInfo {
     authorAccount: string
@@ -45,9 +46,10 @@ const AppModal: IAppModal = {
             const res = yield call(authQueryByAccount, payload)
             console.log(res)
         },
-        *logout({ payload }, { call, put }) {
+        *logout(_, { call }) {
             yield call(authLogout)
             Cookies.remove(AUTHORIZATION_KEY)
+            router.push('/login')
         }
     }
 }
