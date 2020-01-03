@@ -4,19 +4,14 @@ import { Layout, Breadcrumb, Icon } from 'antd'
 import Header from './Header'
 const { Content, Footer, Sider } = Layout
 
-const BasicLayout = ({ children, ...restProps }) => {
+const BasicLayout: React.FC<any> = ({ children, ...restProps }) => {
     return (
         <Layout>
-            <Header />
-            <Content className={styles.layout_content_wrapper} style={{ padding: '0 50px' }}>
-                {/* <Breadcrumb style={{ margin: '16px 0' }}>
-                    <Breadcrumb.Item>Home</Breadcrumb.Item>
-                    <Breadcrumb.Item>List</Breadcrumb.Item>
-                    <Breadcrumb.Item>App</Breadcrumb.Item>
-                </Breadcrumb> */}
+            <Header className={styles.header} />
+            <Content className={styles.layout_content_wrapper}>
                 <Layout style={{ padding: '24px 0', background: '#fff' }}>{children}</Layout>
             </Content>
-            <Footer style={{ textAlign: 'center' }}>Ant Design ©2018 Created by Ant UED</Footer>
+            <Footer className={styles.footer}>Ant Design ©2018 Created by Ant UED</Footer>
         </Layout>
     )
 }

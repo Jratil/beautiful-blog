@@ -17,5 +17,21 @@
     color: #ffffff;
 }
 .layout_content_wrapper {
+    padding: @header-height 50px @footer-height;
     height: calc(100% - @header-height - @footer-height);
+}
+
+.header {
+    width: 100%;
+    position: fixed;
+    top: 0;
+    z-index: 99;
+}
+
+.footer {
+    width: 100%;
+    position: fixed;
+    text-align: center;
+    bottom: 0;
+    z-index: 99;
 }
