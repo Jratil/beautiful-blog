@@ -2,19 +2,23 @@ import { Model, Effect } from 'dva'
 import Cookies from 'js-cookie'
 import api, { AUTHORIZATION_KEY } from '@/services'
 
+export interface IUserInfo {
+    authorAccount: string
+    authorAvatar: string
+    authorBirthday: string
+    authorGender: number
+    authorId: number
+    authorName: string
+    authorPassword: string
+}
+
+export interface IAppState {
+    userInfo: IUserInfo
+}
+
 interface IAppModal extends Model {
     namespace: 'app'
-    state: {
-        userInfo: {
-            authorAccount: string
-            authorAvatar: string
-            authorBirthday: string
-            authorGender: number
-            authorId: number
-            authorName: string
-            authorPassword: string
-        }
-    }
+    state: IAppState
     effects: {
         getUserInfo: Effect
         logout: Effect
@@ -27,12 +31,12 @@ const AppModal: IAppModal = {
     namespace: 'app',
     state: {
         userInfo: {
-            authorAccount: '',
+            authorAccount: '123123@qq.com',
             authorAvatar: '',
-            authorBirthday: '',
+            authorBirthday: '2019-02-23',
             authorGender: 0,
             authorId: 0,
-            authorName: '',
+            authorName: 'Micah',
             authorPassword: ''
         }
     },

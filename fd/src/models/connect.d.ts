@@ -1,3 +1,4 @@
+import { IAppState } from '@/models/app.ts'
 import { IHomeState } from '@/pages/index/model.ts'
 import { ICategoryState } from '@/pages/category/model.ts'
 import { IWriteState } from '@/pages/write/model.ts'
@@ -13,6 +14,7 @@ export interface Loading {
 
 export interface connectState {
     loading: Loading
+    app: IAppState
     home: IHomeState
     category: ICategoryState
     write: IWriteState

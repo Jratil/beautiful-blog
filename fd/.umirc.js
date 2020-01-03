@@ -1,7 +1,9 @@
+export const baseUrl = 'http://120.79.172.32:8000/'
+
 export default {
     proxy: {
         '/api': {
-            target: 'http://120.79.172.32:8000/',
+            target: baseUrl,
             changeOrigin: true,
             pathRewrite: {
                 '^/api': ''
