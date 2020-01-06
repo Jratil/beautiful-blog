@@ -1,0 +1,23 @@
+@import '~@/themes/var';
+
+.article_wrapper {
+    width: 960px;
+    margin: 20px auto 0;
+    .article_title {
+        font-size: 28px;
+        font-weight: 400;
+        line-height: 2;
+    }
+    .article_desc {
+        font-size: 14px;
+        color: @gray-text-color;
+        line-height: 1.5;
+    }
+    .article_content {
+        :global {
+            .public-DraftEditor-content {
+                padding: 20px 0;
+            }
+        }
+    }
+}

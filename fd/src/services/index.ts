@@ -28,6 +28,21 @@ const codeMessage = {
 export const AUTHORIZATION_KEY = 'Authorization'
 
 instance.interceptors.request.use(req => {
+    const { method, url, params } = req
+    if (method === 'get') {
+        const pathArr = (url as string).split('/')
+        const newUrlArr = pathArr.map(r => {
+            const keys = Object.keys(params)
+            const key = r.slice(1)
+            if (r[0] === ':' && keys.includes(key)) {
+                const value = params[key]
+                delete params[key]
+                return value
+            }
+            return r
+        })
+        req.url = newUrlArr.join('/')
+    }
     req.headers.Authorization = Cookies.get(AUTHORIZATION_KEY)
     return req
 })
