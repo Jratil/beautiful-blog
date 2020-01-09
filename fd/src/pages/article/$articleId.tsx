@@ -7,6 +7,7 @@ import BraftEditor, { EditorState } from 'braft-editor'
 import moment from 'moment'
 import { connectState, connectProps } from '@/models/connect'
 import { IArticle } from './model'
+import CommentItem from './components/CommentItem'
 import styles from './index.less'
 import { ICategory } from '../category/model'
 import CollectSVG from 'icons/collection.svg'
@@ -84,6 +85,9 @@ const Page: React.FC<IProps> = ({ detail, categories }) => {
                         avatar={<Avatar src='https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png' alt='Han Solo' />}
                         content={<Editor onChange={handleChange} onSubmit={handleSubmit} submitting={submitting} value={value} />}
                     />
+                    {comments.map(({ author, avatar, content }) => (
+                        <CommentItem name={author} avatarUrl={avatar} content={content}></CommentItem>
+                    ))}
                 </div>
             </div>
             <div className={styles.article_suspended_panel}>
