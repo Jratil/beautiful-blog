@@ -1,6 +1,7 @@
 import React from 'react'
 import styles from '../index.less'
 import { Icon } from 'antd'
+import { Link } from 'umi'
 import { IArticle } from '../model'
 
 interface IProps {
@@ -8,16 +9,9 @@ interface IProps {
 }
 
 const Card: React.FC<IProps> = ({ data }) => {
-    const {
-        articleTitle,
-        articleSubtitle,
-        articleId,
-        authorName,
-        articleLike,
-        lastUpdate
-    } = data
+    const { articleTitle, articleSubtitle, articleId, authorName, articleLike, lastUpdate } = data
     return (
-        <div className={styles.article_wrapper}>
+        <Link to={`/article/${articleId}`} className={styles.article_wrapper}>
             <div className={styles.card_title}>{articleTitle}</div>
             <div className={styles.card_subtitle}>{articleSubtitle}</div>
             <div className={styles.card_footer}>
@@ -34,7 +28,7 @@ const Card: React.FC<IProps> = ({ data }) => {
                     {lastUpdate}
                 </span>
             </div>
-        </div>
+        </Link>
     )
 }
 

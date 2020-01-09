@@ -44,7 +44,7 @@ const ArticleList: React.FC<IProps> = ({ articleData }) => {
         <>
             <div className={styles.articles_wrapper}>
                 {ListContent}
-                <XPagination onChange={handleChange} total={total + 20} {...params} />
+                <XPagination onChange={handleChange} total={total} {...params} />
             </div>
         </>
     )

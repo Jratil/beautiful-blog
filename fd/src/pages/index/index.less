@@ -14,12 +14,16 @@
     width: 300px;
 }
 .article_wrapper {
+    display: block;
     border-radius: 4px;
     compose: base-border;
     background-color: #fff;
+    color: @ml-text-color;
     margin-bottom: 16px;
     width: 640px;
     padding: 10px;
+    cursor: pointer;
+    transition: all linear 0.2s;
     .card_title {
         font-size: 16px;
         font-weight: 700;
@@ -44,6 +48,13 @@
     .card_icon {
         font-size: 16px;
         margin-right: 8px;
+    }
+    &:hover {
+        color: @ml-text-color;
+        background-color: #f3f8fa;
+        .card_title {
+            color: @ml-blue-hover;
+        }
     }
 }
 

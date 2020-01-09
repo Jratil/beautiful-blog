@@ -15,7 +15,7 @@ interface IProps {
 const { Header } = Layout
 const MenuItem = Menu.Item
 
-const CustomHeader: React.FC<IProps> = ({ avatarSrc, ...restProps }) => {
+const CustomHeader: React.FC<IProps> = ({ avatarSrc, dispatch: _dispatch, ...restProps }) => {
     const dispatch = useDispatch()
     const pathname = useContext(ctx)
     const { isFullscreen, toggleFull } = useFullscreen({ dom: document.body })

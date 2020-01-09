@@ -9,8 +9,10 @@ export interface IArticle {
     articleId: number
     articleSubtitle: string
     articleTitle: string
+    articleLike: number
     categoryId: number
     visible: boolean
+    hasLike: boolean //TODO 字段待添加
 }
 
 export interface IArticleState {
@@ -36,8 +38,10 @@ const Main: IModel = {
             articleId: 0,
             articleSubtitle: '',
             articleTitle: '',
+            articleLike: 63,
             categoryId: 0,
-            visible: true
+            visible: true,
+            hasLike: false
         }
     },
     effects: {

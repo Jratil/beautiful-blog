@@ -8,6 +8,7 @@
         "build": "umi build"
     },
     "devDependencies": {
+        "@svgr/webpack": "^5.0.1",
         "@types/classnames": "^2.2.9",
         "@types/js-cookie": "^2.2.4",
         "umi": "^2.12.7",

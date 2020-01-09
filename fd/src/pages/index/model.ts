@@ -17,7 +17,7 @@ export interface IArticle {
 }
 
 export interface IHomeState {
-    articles: IArticle[]
+    articles: { total: number; list: IArticle[] }
 }
 
 interface IModel {
@@ -34,7 +34,7 @@ interface IModel {
 const Main: IModel = {
     namespace: 'home',
     state: {
-        articles: []
+        articles: { total: 0, list: [] }
     },
     effects: {
         *getArticles({ payload }, { call, put }) {

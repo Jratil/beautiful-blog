@@ -1,23 +1,74 @@
 @import '~@/themes/var';
 
-.article_wrapper {
-    width: 960px;
-    margin: 20px auto 0;
-    .article_title {
-        font-size: 28px;
-        font-weight: 400;
-        line-height: 2;
-    }
-    .article_desc {
-        font-size: 14px;
-        color: @gray-text-color;
-        line-height: 1.5;
-    }
-    .article_content {
-        :global {
-            .public-DraftEditor-content {
-                padding: 20px 0;
+.view {
+    position: relative;
+    margin: 0 auto;
+    width: 100%;
+    max-width: 960px;
+    .article {
+        &_area {
+            position: relative;
+            width: 700px;
+            border-radius: 2px;
+            padding: 0 24px;
+            background-color: #fff;
+            max-width: 100%;
+        }
+        &_title {
+            font-size: 28px;
+            font-weight: 400;
+            line-height: 2;
+        }
+        &_desc {
+            font-size: 14px;
+            color: @gray-text-color;
+            line-height: 1.5;
+        }
+        &_content {
+            height: auto;
+            :global {
+                .public-DraftEditor-content {
+                    padding: 20px 0;
+                }
             }
         }
+        &_suspended_panel {
+            position: fixed;
+            margin-left: -84px;
+            top: 192px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            & .panel_btn {
+                width: 36px;
+                height: 36px;
+                border-radius: 50%;
+                background-color: #fff;
+                cursor: pointer;
+                margin-bottom: 9px;
+                color: @gray-text-color;
+                line-height: 36px;
+                font-size: 18px;
+                box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.04);
+                &:hover {
+                    color: @ml-text-color;
+                }
+            }
+            & > .tip {
+                color: @gray-text-color;
+                font-size: 12px;
+                margin: 12px 0;
+                text-align: center;
+            }
+        }
+    }
+    .catalog {
+        position: fixed;
+        top: 100px;
+        margin-left: 720px;
+        width: 240px;
+        margin-bottom: 18px;
+        border-radius: 2px;
     }
 }
