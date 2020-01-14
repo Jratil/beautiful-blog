@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from 'react'
 import { connect, useDispatch } from 'dva'
-import { Row, Col, Divider, Button, Form, Input, DatePicker, Select } from 'antd'
-import moment from 'moment'
+import { Divider, Button, Form, Input, DatePicker, Select } from 'antd'
+import moment, { Moment } from 'moment'
 import BraftEditor, { EditorState } from 'braft-editor'
 import 'braft-editor/dist/index.css'
 import styles from './index.less'
-import { useLocalStorageState, useDebounceFn } from '@umijs/hooks'
+import { useLocalStorageState } from '@umijs/hooks'
 import { genHash } from '@/utils/common'
 
 import { connectState, connectProps } from '@/models/connect'
 import { ICategory } from './model'
 import { router } from 'umi'
+import { useLocation } from 'react-router'
 
 interface IProps extends connectProps {
     categories: ICategory[]
@@ -37,13 +38,13 @@ const initDraft: IDraft = {
     category: 0
 }
 const initDrafts = {}
-const Write: React.FC<IProps> = ({ categories, form, location }) => {
+const Write: React.FC<IProps> = ({ categories }) => {
     const dispatch = useDispatch()
-    const { getFieldDecorator, validateFields } = form
     const [hash, setHash] = useState<string>('')
     const [value, setValue] = useState<string>('')
     const [draft, setDraft] = useState<IDraft>(initDraft)
     const [drafts, setDrafts] = useLocalStorageState<IDrafts>(SAVE_KEY, initDrafts)
+    const location = useLocation()
 
     // const { run } = useDebounceFn(
     //     () => {
@@ -80,6 +81,12 @@ const Write: React.FC<IProps> = ({ categories, form, location }) => {
         return hash
     }
 
+    const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => setDraft({ ...draft, title: e.target.value })
+
+    const handleCategoryChange = (category: number) => setDraft({ ...draft, category })
+
+    const handleTimeChange = (_timeObj: Moment | null, time: string) => setDraft({ ...draft, time })
+
     const handleChange = (editorState: EditorState) => {
         const content = editorState.toRAW()
         setValue(content)
@@ -91,18 +98,15 @@ const Write: React.FC<IProps> = ({ categories, form, location }) => {
     }
 
     const handlePublish = () => {
-        validateFields((err, values) => {
-            if (err) return
-            dispatch({
-                type: 'write/addArticle',
-                payload: { ...values, content: value },
-                callback: () => {
-                    const tmp = { ...drafts }
-                    delete tmp[hash]
-                    setDrafts(tmp)
-                    router.push('/')
-                }
-            })
+        dispatch({
+            type: 'write/addArticle',
+            payload: draft,
+            callback: () => {
+                const tmp = { ...drafts }
+                delete tmp[hash]
+                setDrafts(tmp)
+                router.push('/')
+            }
         })
     }
 
@@ -124,25 +128,27 @@ const Write: React.FC<IProps> = ({ categories, form, location }) => {
                 />
             </div>
             <div className={styles.sider_wrapper}>
-                <div>
-                    <Form labelAlign="left" labelCol={{ span: 4 }} wrapperCol={{ span: 20 }}>
-                        <FormItem label="标题">
-                            {getFieldDecorator('title', {
-                                initialValue: title
-                            })(<Input></Input>)}
-                        </FormItem>
-                        <FormItem label="分类">
-                            {getFieldDecorator('category', {
-                                initialValue: category || (categories[0] && categories[0].id)
-                            })(<Select>{SelectOptions}</Select>)}
-                        </FormItem>
-                        <FormItem label="时间">
-                            {getFieldDecorator('time', {
-                                initialValue: time || moment()
-                            })(<DatePicker showTime placeholder="Select Time" />)}
-                        </FormItem>
-                    </Form>
-                </div>
+                <Form labelAlign="left" labelCol={{ span: 4 }} wrapperCol={{ span: 20 }}>
+                    <FormItem label="标题">
+                        <Input value={title} onChange={handleTitleChange} />
+                    </FormItem>
+                    <FormItem label="分类">
+                        <Select<number>
+                            value={category || (categories[0] && categories[0].id)}
+                            onChange={handleCategoryChange}
+                        >
+                            {SelectOptions}
+                        </Select>
+                    </FormItem>
+                    <FormItem label="时间">
+                        <DatePicker
+                            showTime
+                            placeholder="Select Time"
+                            value={moment(time) || moment()}
+                            onChange={handleTimeChange}
+                        />
+                    </FormItem>
+                </Form>
                 <Divider />
                 <Button onClick={handleSave} style={{ marginRight: 8 }}>
                     保存
@@ -157,4 +163,4 @@ const Write: React.FC<IProps> = ({ categories, form, location }) => {
 
 export default connect(({ write }: connectState) => ({
     categories: write.categories
-}))(Form.create()(Write))
+}))(Write)
