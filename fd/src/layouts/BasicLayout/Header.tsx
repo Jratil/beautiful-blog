@@ -5,7 +5,7 @@ import { useFullscreen } from '@umijs/hooks'
 import { Icon, Layout, Menu, Avatar, Dropdown } from 'antd'
 import styles from './index.less'
 import { ctx } from '../index'
-import { PATH_WITH_LAYOUT } from '../index'
+import { PATH_WITH_LAYOUT } from '../../../config/routes.config'
 import { connectState } from '@/models/connect'
 
 interface IProps {
@@ -25,7 +25,7 @@ const CustomHeader: React.FC<IProps> = ({ avatarSrc, dispatch: _dispatch, ...res
     const dropdownMenu = (
         <Menu>
             <MenuItem>
-                <Link to='/user'>个人资料</Link>
+                <Link to="/user">个人资料</Link>
             </MenuItem>
             <Menu.Divider />
             <MenuItem>
@@ -36,12 +36,16 @@ const CustomHeader: React.FC<IProps> = ({ avatarSrc, dispatch: _dispatch, ...res
     return (
         <Header {...restProps}>
             <div className={styles.logo} />
-            <Dropdown overlay={dropdownMenu} placement='bottomRight'>
+            <Dropdown overlay={dropdownMenu} placement="bottomRight">
                 <Avatar className={styles.avatar} src={avatarSrc} />
             </Dropdown>
-            <Icon type={isFullscreen ? 'fullscreen-exit' : 'fullscreen'} onClick={toggleFull} className={styles.fullscreen} />
-            <Menu theme='dark' mode='horizontal' selectedKeys={[pathname]} style={{ lineHeight: '64px' }}>
-                {PATH_WITH_LAYOUT.map(p => (
+            <Icon
+                type={isFullscreen ? 'fullscreen-exit' : 'fullscreen'}
+                onClick={toggleFull}
+                className={styles.fullscreen}
+            />
+            <Menu theme="dark" mode="horizontal" selectedKeys={[pathname]} style={{ lineHeight: '64px' }}>
+                {PATH_WITH_LAYOUT.map((p) => (
                     <MenuItem key={p.path}>
                         <Link to={p.path}>{p.title}</Link>
                     </MenuItem>
