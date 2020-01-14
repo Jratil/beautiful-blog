@@ -30,7 +30,7 @@ interface IModel {
     }
 }
 
-const Main: IModel = {
+const article: IModel = {
     namespace: 'article',
     state: {
         detail: {
@@ -60,4 +60,4 @@ const Main: IModel = {
     }
 }
 
-export default Main
+export default article

@@ -45,7 +45,7 @@ const CustomHeader: React.FC<IProps> = ({ avatarSrc, dispatch: _dispatch, ...res
                 className={styles.fullscreen}
             />
             <Menu theme="dark" mode="horizontal" selectedKeys={[pathname]} style={{ lineHeight: '64px' }}>
-                {PATH_WITH_LAYOUT.map((p) => (
+                {PATH_WITH_LAYOUT.filter((r) => !r.exclude).map((p) => (
                     <MenuItem key={p.path}>
                         <Link to={p.path}>{p.title}</Link>
                     </MenuItem>

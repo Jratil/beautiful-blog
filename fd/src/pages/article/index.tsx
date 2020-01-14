@@ -31,9 +31,9 @@ const Page: React.FC<IProps> = ({ detail, categories }) => {
         dispatch({ type: 'category/get', payload: { articleId } })
     }, [])
 
-    const categoryName = useMemo(() => categories.find(r => r.id === categoryId)?.name, [categories, categoryId])
+    const categoryName = useMemo(() => categories.find((r) => r.id === categoryId)?.name, [categories, categoryId])
 
-    const handleChange = useCallback(e => setValue(e.target.value), [setValue])
+    const handleChange = useCallback((e) => setValue(e.target.value), [setValue])
 
     const handleSubmit = () => {
         if (!value) return
@@ -61,7 +61,7 @@ const Page: React.FC<IProps> = ({ detail, categories }) => {
                 <TextArea rows={4} onChange={onChange} value={value} />
             </Form.Item>
             <Form.Item>
-                <Button htmlType='submit' loading={submitting} onClick={onSubmit} type='primary'>
+                <Button htmlType="submit" loading={submitting} onClick={onSubmit} type="primary">
                     Add Comment
                 </Button>
             </Form.Item>
@@ -79,32 +79,48 @@ const Page: React.FC<IProps> = ({ detail, categories }) => {
                     controls={[]}
                     value={BraftEditor.createEditorState(articleContent)}
                     contentClassName={styles.article_content}
-                ></BraftEditor>
+                />
                 <div className={styles.comment_list}>
                     <Comment
-                        avatar={<Avatar src='https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png' alt='Han Solo' />}
-                        content={<Editor onChange={handleChange} onSubmit={handleSubmit} submitting={submitting} value={value} />}
+                        avatar={
+                            <Avatar
+                                src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
+                                alt="Han Solo"
+                            />
+                        }
+                        content={
+                            <Editor
+                                onChange={handleChange}
+                                onSubmit={handleSubmit}
+                                submitting={submitting}
+                                value={value}
+                            />
+                        }
                     />
-                    {comments.map(({ author, avatar, content }) => (
-                        <CommentItem name={author} avatarUrl={avatar} content={content}></CommentItem>
+                    {/* TODO: key 不用 index */}
+                    {comments.map(({ author, avatar, content }, index) => (
+                        <CommentItem name={author} avatarUrl={avatar} content={content} key={index} />
                     ))}
                 </div>
             </div>
             <div className={styles.article_suspended_panel}>
                 <div>
                     <Badge
-                        style={{ backgroundColor: hasLike ? '#20a0ff' : '#ffffff', color: hasLike ? '#ffffff' : '#999999' }}
+                        style={{
+                            backgroundColor: hasLike ? '#20a0ff' : '#ffffff',
+                            color: hasLike ? '#ffffff' : '#999999'
+                        }}
                         count={articleLike}
                         overflowCount={999}
                     >
-                        <Icon className={styles.panel_btn} type='like'></Icon>
+                        <Icon className={styles.panel_btn} type="like" />
                     </Badge>
                 </div>
-                <Icon component={CollectSVG} className={styles.panel_btn}></Icon>
+                <Icon component={CollectSVG} className={styles.panel_btn} />
                 <div className={styles.tip}>分享</div>
-                <Icon className={styles.panel_btn} type='weibo'></Icon>
-                <Icon className={styles.panel_btn} type='qq'></Icon>
-                <Icon className={styles.panel_btn} type='wechat'></Icon>
+                <Icon className={styles.panel_btn} type="weibo" />
+                <Icon className={styles.panel_btn} type="qq" />
+                <Icon className={styles.panel_btn} type="wechat" />
             </div>
             <div className={styles.catalog}>
                 <div className={styles.catalog_title}>目录</div>
@@ -114,4 +130,7 @@ const Page: React.FC<IProps> = ({ detail, categories }) => {
     )
 }
 
-export default connect(({ article, category }: connectState) => ({ detail: article.detail, categories: category.categories }))(Page)
+export default connect(({ article, category }: connectState) => ({
+    detail: article.detail,
+    categories: category.categories
+}))(Page)

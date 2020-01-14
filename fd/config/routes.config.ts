@@ -5,11 +5,12 @@ export const PATH_WITH_LAYOUT = [
         title: '首页',
         component: './index/index'
     },
-    // {
-    //     path: '/dashboard',
-    //     type: 'home',
-    //     title: '总览'
-    // },
+    {
+        path: '/article/:articleId',
+        title: '文章详情',
+        exclude: true,
+        component: './article/index'
+    },
     // {
     //     path: '/category',
     //     type: 'home',
