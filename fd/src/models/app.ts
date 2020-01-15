@@ -2,11 +2,12 @@ import { Model, Effect } from 'dva'
 import Cookies from 'js-cookie'
 import api, { AUTHORIZATION_KEY } from '@/services'
 import { router } from 'umi'
+import { Reducer } from 'redux'
 
 export interface IUserInfo {
     authorAccount: string
     authorAvatar: string
-    authorBirthday: string
+    authorBirthday: number
     authorGender: number
     authorId: number
     authorName: string
@@ -24,6 +25,9 @@ interface IAppModal extends Model {
         getUserInfo: Effect
         logout: Effect
     }
+    reducers: {
+        updateState: Reducer
+    }
 }
 
 const { authQueryByAccount, authLogout } = api
@@ -34,7 +38,7 @@ const AppModal: IAppModal = {
         userInfo: {
             authorAccount: '123123@qq.com',
             authorAvatar: '',
-            authorBirthday: '2019-02-23',
+            authorBirthday: 1575988696,
             authorGender: 0,
             authorId: 0,
             authorName: 'Micah',
@@ -43,13 +47,27 @@ const AppModal: IAppModal = {
     },
     effects: {
         *getUserInfo({ payload }, { call, put }) {
-            const res = yield call(authQueryByAccount, payload)
-            console.log(res)
+            const userInfo = yield call(authQueryByAccount, payload)
+            yield put({ type: 'updateState', payload: { userInfo } })
         },
         *logout(_, { call }) {
             yield call(authLogout)
             Cookies.remove(AUTHORIZATION_KEY)
             router.push('/login')
+        }
+    },
+    reducers: {
+        updateState(state, { payload }) {
+            return {
+                ...state,
+                ...payload
+            }
+        }
+    },
+    subscriptions: {
+        setup({ dispatch }) {
+            const loginInfo = window.localStorage.getItem('loginInfo')
+            dispatch({ type: 'app/getUserInfo', payload: { account: JSON.parse(loginInfo!).account } })
         }
     }
 }

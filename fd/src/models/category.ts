@@ -5,8 +5,11 @@ import { Reducer } from 'redux'
 const { categoryGet } = api
 
 export interface ICategory {
-    id: number
-    name: string
+    categoryId: number
+    categoryName: string
+    categoryVisible: boolean
+    authorId: number
+    createTime: number
 }
 
 export interface ICategoryState {
@@ -32,7 +35,7 @@ const Category: IModel = {
     effects: {
         *get({ payload }, { call, put }) {
             const categories = yield call(categoryGet, payload)
-            yield put({ type: 'updateState', payload: { categories } })
+            yield put({ type: 'updateState', payload: { categories: categories.list } })
         }
     },
     reducers: {

@@ -27,16 +27,17 @@ const codeMessage = {
 
 export const AUTHORIZATION_KEY = 'Authorization'
 
-instance.interceptors.request.use(req => {
-    const { method, url, params } = req
-    if (method === 'get') {
+instance.interceptors.request.use((req) => {
+    const { method, url, params, data } = req
+    if (url?.indexOf(':') !== -1) {
+        const query = method === 'get' ? params : data
         const pathArr = (url as string).split('/')
-        const newUrlArr = pathArr.map(r => {
-            const keys = Object.keys(params)
+        const newUrlArr = pathArr.map((r) => {
+            const keys = Object.keys(query)
             const key = r.slice(1)
             if (r[0] === ':' && keys.includes(key)) {
-                const value = params[key]
-                delete params[key]
+                const value = query[key]
+                delete query[key]
                 return value
             }
             return r
@@ -48,7 +49,7 @@ instance.interceptors.request.use(req => {
 })
 
 instance.interceptors.response.use(
-    res => {
+    (res) => {
         const { code, message, data } = res.data
         if (code === 0) return data || true
         notification.error({
@@ -56,7 +57,7 @@ instance.interceptors.response.use(
             description: message
         })
     },
-    err => {
+    (err) => {
         const { status, statusText } = err.response
         const errorText = codeMessage[status] || statusText
 

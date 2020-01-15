@@ -22,14 +22,14 @@ const initParams = {
     count: 10
 }
 
-const Home: React.FC<IProps> = ({ articles, categories }) => {
+const Home: React.FC<IProps> = ({ articles, categories, authorId }) => {
     const dispatch = useDispatch()
     const [params, setParams] = useState<IParams>(initParams)
 
     useEffect(() => {
         // getArticles()
         getCategories()
-    }, [])
+    }, [authorId])
 
     // useEffect(() => {
     //     getArticles()
@@ -39,7 +39,7 @@ const Home: React.FC<IProps> = ({ articles, categories }) => {
     //     dispatch({ type: 'home/getArticles', payload: newParams })
     // }
     const getCategories = () => {
-        dispatch({ type: 'category/get' })
+        dispatch({ type: 'category/get', payload: { authorId } })
     }
 
     return (
@@ -52,7 +52,8 @@ const Home: React.FC<IProps> = ({ articles, categories }) => {
     )
 }
 
-export default connect(({ home, category }: connectState) => ({
+export default connect(({ home, category, app }: connectState) => ({
+    authorId: app.userInfo.authorId,
     articles: home.articles,
     categories: category.categories
 }))(Home)

@@ -1,7 +1,7 @@
 import { IAppState } from '@/models/app.ts'
+import { ICategoryState } from '@/models/category'
 import { IArticleState } from '@/pages/article/model'
 import { IHomeState } from '@/pages/index/model.ts'
-import { ICategoryState } from '@/pages/category/model.ts'
 import { IWriteState } from '@/pages/write/model.ts'
 import { WrappedFormUtils } from 'antd/lib/form/Form'
 

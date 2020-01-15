@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Avatar, Divider, Button, Input } from 'antd'
 import { connect } from 'dva'
 import styles from '../index.less'
-import { ICategory } from '@/pages/write/model'
+import { ICategory } from '@/models/category'
 import { connectState, connectProps } from '@/models/connect'
 
 interface IProps extends connectProps {
@@ -14,11 +14,12 @@ const Sider: React.FC<IProps> = ({ categories }) => {
     const handleCategory = () => {}
     return (
         <div className={styles.sider_wrapper}>
-            <Search onSearch={value => console.log(value)} />
+            <Search onSearch={(value) => console.log(value)} />
+            <Divider>分类</Divider>
             <div className={styles.tag_wrapper}>
-                {categories.map(r => (
-                    <Button shape='round' key={r.id} className={styles.tag} onClick={handleCategory}>
-                        {r.name}
+                {categories.map((r) => (
+                    <Button shape="round" key={r.categoryId} className={styles.tag} onClick={handleCategory}>
+                        {r.categoryName}
                     </Button>
                 ))}
             </div>
