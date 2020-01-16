@@ -62,44 +62,21 @@ const Write: React.FC<IProps> = ({ categories, authorId }) => {
     useEffect(() => {
         const hash = getHash()
         setHash(hash)
-        const tempDraft = drafts && drafts[hash]
-        if (tempDraft) {
-            // const { content } = tempDraft
-            // const newValue = BraftEditor.createEditorState(JSON.parse(content))
-            // setValue(newValue)
-            setDraft(tempDraft)
-        }
     }, [])
 
     useEffect(() => {
-        dispatch({ type: 'category/get', payload: { authorId } })
-    }, [authorId])
+        const tempDraft = drafts?.[hash]
+        if (tempDraft) {
+            const { content } = tempDraft
+            const newValue = BraftEditor.createEditorState(content)
+            setValue(newValue)
+            setDraft(tempDraft)
+        }
+    }, [hash, drafts])
 
     useEffect(() => {
-        console.log(654)
-        //     const { content } = draft
-        //     let formatContent
-        //     try {
-        //         formatContent = JSON.parse(content)
-        //     } catch (err) {
-        //         //  忽略错误
-        //     }
-        const newValue = BraftEditor.createEditorState({
-            blocks: [
-                {
-                    key: 'cip29',
-                    text: 'awdqweqweqwdaweqsdaweasdaw',
-                    type: 'unstyled',
-                    depth: 0,
-                    inlineStyleRanges: [],
-                    entityRanges: [],
-                    data: {}
-                }
-            ],
-            entityMap: {}
-        })
-        // setValue(newValue)
-    }, [draft])
+        if (authorId !== 0) dispatch({ type: 'category/get', payload: { authorId } })
+    }, [authorId])
 
     const getHash = () => {
         const { pathname, query } = location
@@ -113,24 +90,34 @@ const Write: React.FC<IProps> = ({ categories, authorId }) => {
         return hash
     }
 
-    const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => setDraft({ ...draft, title: e.target.value })
+    const handleTitleChange = useCallback(
+        (e: React.ChangeEvent<HTMLInputElement>) => setDraft({ ...draft, title: e.target.value }),
+        []
+    )
 
-    const handleCategoryChange = (category: number) => setDraft({ ...draft, category })
+    const handleCategoryChange = useCallback((category: number) => setDraft({ ...draft, category }), [])
 
-    const handleTimeChange = (_timeObj: Moment | null, time: string) => setDraft({ ...draft, time })
+    const handleTimeChange = useCallback((_timeObj: Moment | null, time: string) => setDraft({ ...draft, time }), [])
 
-    const handleChange = (editorState: EditorState) => {
+    const handleChange = useCallback((editorState: EditorState) => {
         const content = editorState.toRAW()
         setValue(content)
         setDraft({ ...draft, content })
-    }
+    }, [])
 
-    const handleSave = () => {
+    const handleSave = useCallback(() => {
         setDrafts({ ...drafts, [hash]: { ...draft, saveTime: moment().format('YYYY-MM-DD HH:mm:ss') } })
-    }
+    }, [])
 
-    const handlePublish = () => {
+    const handlePublish = useCallback(() => {
         const { title, category, content } = draft
+        const callback = () => {
+            const tmp = { ...drafts }
+            delete tmp[hash]
+            setDrafts(tmp)
+            //TODO  可以返回文章id ，跳转到文章详情页 ，提升用户体验
+            router.push('/')
+        }
         dispatch({
             type: 'write/addArticle',
             payload: {
@@ -139,24 +126,24 @@ const Write: React.FC<IProps> = ({ categories, authorId }) => {
                 articleContent: content,
                 categoryId: category
             },
-            callback: () => {
-                const tmp = { ...drafts }
-                delete tmp[hash]
-                setDrafts(tmp)
-                router.push('/')
-            }
+            callback
         })
-    }
+    }, [authorId, drafts])
 
-    const SelectOptions = categories.map(({ categoryId, categoryName }) => (
-        <SelectOption key={categoryId} value={categoryId}>
-            {categoryName}
-        </SelectOption>
-    ))
+    const SelectOptions = useMemo(
+        () =>
+            categories.map(({ categoryId, categoryName }) => (
+                <SelectOption key={categoryId} value={categoryId}>
+                    {categoryName}
+                </SelectOption>
+            )),
+        [categories]
+    )
 
-    const { time, content, title, category } = draft
-
-    const browseDraft = useCallback((hash: string) => setDraft(drafts[hash]), [drafts])
+    const browseDraft = useCallback((hash: string) => {
+        setHash(hash)
+        router.replace(`/write?hash=${hash}`)
+    }, [])
 
     //  函数重载
     //  当 hash 为 string 删除该指定草稿
@@ -199,6 +186,8 @@ const Write: React.FC<IProps> = ({ categories, authorId }) => {
             )
         })
     }, [drafts])
+
+    const { time, title, category } = draft
 
     return (
         <div className={styles.write_wrapper}>
