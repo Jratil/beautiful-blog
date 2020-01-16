@@ -158,13 +158,21 @@ const Write: React.FC<IProps> = ({ categories, authorId }) => {
 
     const browseDraft = useCallback((hash: string) => setDraft(drafts[hash]), [drafts])
 
+    //  函数重载
+    //  当 hash 为 string 删除该指定草稿
+    //  当 hash 为 boolean 且为 true 时，删除全部草稿
     const delDraft = useCallback(
-        (hash: string) => {
+        (hash: string | boolean) => {
             Modal.confirm({
                 title: '确定删除该草稿？',
                 onOk: () => {
-                    const { [hash]: draftToDel, ...restDrafts } = drafts
-                    setDrafts(restDrafts)
+                    if (typeof hash === 'boolean' && hash) {
+                        setDrafts({})
+                        return
+                    } else {
+                        const { [hash as string]: draftToDel, ...restDrafts } = drafts
+                        setDrafts(restDrafts)
+                    }
                 }
             })
         },
@@ -235,7 +243,9 @@ const Write: React.FC<IProps> = ({ categories, authorId }) => {
                     <>
                         <Divider>
                             本地已保存
-                            <Button type="link">全部删除</Button>
+                            <Button type="link" onClick={() => delDraft(true)}>
+                                全部删除
+                            </Button>
                         </Divider>
                         <List split={false}>{listItems}</List>
                     </>
