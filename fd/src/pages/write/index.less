@@ -2,6 +2,7 @@
 
 .write_wrapper {
     height: calc(100vh - @header-height - @footer-height - 48px);
+    min-height: 500px;
     display: flex;
     align-items: stretch;
 }
@@ -14,7 +15,14 @@
 .sider_wrapper {
     compose: base-border;
     margin-left: 28px;
-    padding: 10px;
+    padding: 16px;
     width: 300px;
     background: #fff;
+}
+
+.list_icon {
+    margin-left: 4px;
+    font-size: 14px;
+    line-height: 14px;
+    .linkColor();
 }

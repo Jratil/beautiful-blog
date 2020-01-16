@@ -24,11 +24,11 @@ const CustomHeader: React.FC<IProps> = ({ avatarSrc, dispatch: _dispatch, ...res
 
     const dropdownMenu = (
         <Menu>
-            <MenuItem>
+            <MenuItem key="user">
                 <Link to="/user">个人资料</Link>
             </MenuItem>
             <Menu.Divider />
-            <MenuItem>
+            <MenuItem key="logout">
                 <a onClick={handleLogout}>注销</a>
             </MenuItem>
         </Menu>

@@ -38,6 +38,7 @@ const Main: IModel = {
     },
     effects: {
         *getArticles({ payload }, { call, put }) {
+            console.log(payload)
             const articles = yield call(articleGet, payload)
             yield put({ type: 'updateState', payload: { articles } })
         }

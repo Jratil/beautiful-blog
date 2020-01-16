@@ -67,7 +67,7 @@ const AppModal: IAppModal = {
     subscriptions: {
         setup({ dispatch }) {
             const loginInfo = window.localStorage.getItem('loginInfo')
-            dispatch({ type: 'app/getUserInfo', payload: { account: JSON.parse(loginInfo!).account } })
+            dispatch({ type: 'getUserInfo', payload: { account: JSON.parse(loginInfo!).account } })
         }
     }
 }

@@ -4,12 +4,11 @@ import Sider from './components/Sider'
 import styles from './index.less'
 import { connectState, connectProps } from '@/models/connect'
 import { IArticle } from './model'
-import { ICategory } from '@/pages/category/model'
 import ArticleList from './components/ArticleList'
 
 interface IProps extends connectProps {
     articles: IArticle[]
-    categories: ICategory[]
+    authorId: number
 }
 
 interface IParams {
@@ -22,7 +21,7 @@ const initParams = {
     count: 10
 }
 
-const Home: React.FC<IProps> = ({ articles, categories, authorId }) => {
+const Home: React.FC<IProps> = ({ articles, authorId }) => {
     const dispatch = useDispatch()
     const [params, setParams] = useState<IParams>(initParams)
 
@@ -36,8 +35,9 @@ const Home: React.FC<IProps> = ({ articles, categories, authorId }) => {
     // }, [params])
 
     // const getArticles = (newParams: IParams = params) => {
-    //     dispatch({ type: 'home/getArticles', payload: newParams })
+    //     dispatch({ type: 'home/getArticles', payload: { authorId } })
     // }
+
     const getCategories = () => {
         dispatch({ type: 'category/get', payload: { authorId } })
     }
@@ -52,8 +52,7 @@ const Home: React.FC<IProps> = ({ articles, categories, authorId }) => {
     )
 }
 
-export default connect(({ home, category, app }: connectState) => ({
+export default connect(({ home, app }: connectState) => ({
     authorId: app.userInfo.authorId,
-    articles: home.articles,
-    categories: category.categories
+    articles: home.articles
 }))(Home)

@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback, useMemo } from 'react'
 import { connect, useDispatch } from 'dva'
-import { Divider, Button, Form, Input, DatePicker, Select } from 'antd'
+import { Divider, Button, Form, Input, DatePicker, Select, List, Icon, Modal } from 'antd'
 import moment, { Moment } from 'moment'
 import BraftEditor, { EditorState } from 'braft-editor'
 import 'braft-editor/dist/index.css'
@@ -9,12 +9,15 @@ import { useLocalStorageState } from '@umijs/hooks'
 import { genHash } from '@/utils/common'
 
 import { connectState, connectProps } from '@/models/connect'
-import { ICategory } from './model'
+import { ICategory } from '@/models/category'
 import { router } from 'umi'
 import { useLocation } from 'react-router'
+import DelSVG from 'icons/close.svg'
+import BrowseSVG from 'icons/browse.svg'
 
 interface IProps extends connectProps {
     categories: ICategory[]
+    authorId: number
 }
 
 interface IDraft {
@@ -22,6 +25,7 @@ interface IDraft {
     content: string
     time: string
     category: number
+    saveTime?: string
 }
 
 interface IDrafts {
@@ -29,6 +33,7 @@ interface IDrafts {
 }
 
 const FormItem = Form.Item
+const ListItem = List.Item
 const SelectOption = Select.Option
 const SAVE_KEY = 'draft'
 const initDraft: IDraft = {
@@ -38,7 +43,7 @@ const initDraft: IDraft = {
     category: 0
 }
 const initDrafts = {}
-const Write: React.FC<IProps> = ({ categories }) => {
+const Write: React.FC<IProps> = ({ categories, authorId }) => {
     const dispatch = useDispatch()
     const [hash, setHash] = useState<string>('')
     const [value, setValue] = useState<string>('')
@@ -55,19 +60,46 @@ const Write: React.FC<IProps> = ({ categories }) => {
     // )
 
     useEffect(() => {
-        dispatch({
-            type: 'write/getCategory'
-        })
         const hash = getHash()
         setHash(hash)
         const tempDraft = drafts && drafts[hash]
         if (tempDraft) {
-            const { title, content, time } = tempDraft
-            const newValue = BraftEditor.createEditorState(JSON.parse(content))
-            setValue(newValue)
+            // const { content } = tempDraft
+            // const newValue = BraftEditor.createEditorState(JSON.parse(content))
+            // setValue(newValue)
             setDraft(tempDraft)
         }
     }, [])
+
+    useEffect(() => {
+        dispatch({ type: 'category/get', payload: { authorId } })
+    }, [authorId])
+
+    useEffect(() => {
+        console.log(654)
+        //     const { content } = draft
+        //     let formatContent
+        //     try {
+        //         formatContent = JSON.parse(content)
+        //     } catch (err) {
+        //         //  忽略错误
+        //     }
+        const newValue = BraftEditor.createEditorState({
+            blocks: [
+                {
+                    key: 'cip29',
+                    text: 'awdqweqweqwdaweqsdaweasdaw',
+                    type: 'unstyled',
+                    depth: 0,
+                    inlineStyleRanges: [],
+                    entityRanges: [],
+                    data: {}
+                }
+            ],
+            entityMap: {}
+        })
+        // setValue(newValue)
+    }, [draft])
 
     const getHash = () => {
         const { pathname, query } = location
@@ -94,13 +126,19 @@ const Write: React.FC<IProps> = ({ categories }) => {
     }
 
     const handleSave = () => {
-        setDrafts({ ...drafts, [hash]: draft })
+        setDrafts({ ...drafts, [hash]: { ...draft, saveTime: moment().format('YYYY-MM-DD HH:mm:ss') } })
     }
 
     const handlePublish = () => {
+        const { title, category, content } = draft
         dispatch({
             type: 'write/addArticle',
-            payload: draft,
+            payload: {
+                authorId,
+                articleTitle: title,
+                articleContent: content,
+                categoryId: category
+            },
             callback: () => {
                 const tmp = { ...drafts }
                 delete tmp[hash]
@@ -110,13 +148,49 @@ const Write: React.FC<IProps> = ({ categories }) => {
         })
     }
 
-    const SelectOptions = categories.map(({ id, name }) => (
-        <SelectOption key={id} value={id}>
-            {name}
+    const SelectOptions = categories.map(({ categoryId, categoryName }) => (
+        <SelectOption key={categoryId} value={categoryId}>
+            {categoryName}
         </SelectOption>
     ))
 
     const { time, content, title, category } = draft
+
+    const browseDraft = useCallback((hash: string) => setDraft(drafts[hash]), [drafts])
+
+    const delDraft = useCallback(
+        (hash: string) => {
+            Modal.confirm({
+                title: '确定删除该草稿？',
+                onOk: () => {
+                    const { [hash]: draftToDel, ...restDrafts } = drafts
+                    setDrafts(restDrafts)
+                }
+            })
+        },
+        [drafts]
+    )
+
+    const listItemExtra = useCallback(
+        (hash: string) => (
+            <>
+                <Icon className={styles.list_icon} component={BrowseSVG} onClick={() => browseDraft(hash)} />
+                <Icon className={styles.list_icon} component={DelSVG} onClick={() => delDraft(hash)} />
+            </>
+        ),
+        [browseDraft, delDraft]
+    )
+
+    const listItems = useMemo(() => {
+        return Object.keys(drafts).map((key) => {
+            const { title, saveTime } = drafts[key]
+            return (
+                <ListItem key={key} extra={listItemExtra(key)}>
+                    {`${title ? title : '无标题'}(${saveTime})`}
+                </ListItem>
+            )
+        })
+    }, [drafts])
 
     return (
         <div className={styles.write_wrapper}>
@@ -134,7 +208,7 @@ const Write: React.FC<IProps> = ({ categories }) => {
                     </FormItem>
                     <FormItem label="分类">
                         <Select<number>
-                            value={category || (categories[0] && categories[0].id)}
+                            value={category || (categories[0] && categories[0].categoryId)}
                             onChange={handleCategoryChange}
                         >
                             {SelectOptions}
@@ -144,23 +218,34 @@ const Write: React.FC<IProps> = ({ categories }) => {
                         <DatePicker
                             showTime
                             placeholder="Select Time"
-                            value={moment(time) || moment()}
+                            value={(time && moment(time)) || moment()}
                             onChange={handleTimeChange}
                         />
                     </FormItem>
                 </Form>
                 <Divider />
-                <Button onClick={handleSave} style={{ marginRight: 8 }}>
+                <Button onClick={handleSave} style={{ marginRight: 12 }}>
                     保存
                 </Button>
                 <Button type="primary" onClick={handlePublish}>
                     发布
                 </Button>
+
+                {Object.keys(drafts).length > 0 && (
+                    <>
+                        <Divider>
+                            本地已保存
+                            <Button type="link">全部删除</Button>
+                        </Divider>
+                        <List split={false}>{listItems}</List>
+                    </>
+                )}
             </div>
         </div>
     )
 }
 
-export default connect(({ write }: connectState) => ({
-    categories: write.categories
+export default connect(({ app, category }: connectState) => ({
+    authorId: app.userInfo.authorId,
+    categories: category.categories
 }))(Write)

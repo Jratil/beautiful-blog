@@ -11,7 +11,7 @@ export default {
 
     // email
     emailSend: 'POST /email/send_code',
-    articleGet: 'GET /article/main_page',
+    articleGet: 'POST /article/page/:authorId',
 
     // category
     categoryAdd: 'POST /category/add',

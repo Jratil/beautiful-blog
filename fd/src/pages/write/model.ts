@@ -1,36 +1,25 @@
 import { Model, Effect } from 'dva'
 import api from '@/services'
-import { router } from 'umi'
+import { Reducer } from 'redux'
 
-export interface ICategory {
-    id: number
-    name: string
-}
-
-export interface IWriteState {
-    categories: ICategory[]
-}
+export interface IWriteState {}
 
 interface IModel extends Model {
     namespace: 'write'
     state: any
     effects: {
-        getCategory: Effect
         addArticle: Effect
+    }
+    reducers: {
+        updateState: Reducer
     }
 }
 
-const { categoryGet, articleAdd } = api
+const { articleAdd } = api
 const WriteModel: IModel = {
     namespace: 'write',
-    state: {
-        categories: []
-    },
+    state: {},
     effects: {
-        *getCategory({ payload }, { call, put }) {
-            const categories = yield call(categoryGet, payload)
-            yield put({ type: 'updateState', payload: { categories } })
-        },
         *addArticle({ payload, callback }, { call }) {
             const res = yield call(articleAdd, payload)
             if (res && callback) callback()

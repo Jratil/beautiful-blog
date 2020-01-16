@@ -12,6 +12,7 @@ interface IProps {
         list: IArticle[]
         total: number
     }
+    authorId: number
 }
 interface IParams {
     page: number
@@ -23,21 +24,21 @@ const initParams = {
     count: 10
 }
 
-const ArticleList: React.FC<IProps> = ({ articleData }) => {
+const ArticleList: React.FC<IProps> = ({ articleData, authorId }) => {
     const dispatch = useDispatch()
     const [params, setParams] = useState<IParams>(initParams)
     const { list = [], total = 0 } = articleData
 
     useEffect(() => {
-        _getArticles()
-    }, [params])
+        if (authorId !== 0) _getArticles()
+    }, [params, authorId])
 
     const handleChange = (page: number, count?: number) => setParams({ page, count })
 
-    const ListContent = list.length === 0 ? <Empty /> : list.map(r => <Card data={r} key={r.articleId} />)
+    const ListContent = list.length === 0 ? <Empty /> : list.map((r) => <Card data={r} key={r.articleId} />)
 
     const _getArticles = (newParams: IParams = params) => {
-        dispatch({ type: 'home/getArticles', payload: newParams })
+        dispatch({ type: 'home/getArticles', payload: { ...newParams, authorId } })
     }
 
     return (
@@ -50,4 +51,7 @@ const ArticleList: React.FC<IProps> = ({ articleData }) => {
     )
 }
 
-export default connect(({ home }: connectState) => ({ articleData: home.articles }))(ArticleList)
+export default connect(({ home, app }: connectState) => ({
+    articleData: home.articles,
+    authorId: app.userInfo.authorId
+}))(ArticleList)
