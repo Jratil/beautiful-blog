@@ -28,6 +28,8 @@ interface IDraft {
     saveTime?: string
 }
 
+type IDraftKey = keyof IDraft
+
 interface IDrafts {
     [x: string]: IDraft
 }
@@ -42,13 +44,12 @@ const initDraft: IDraft = {
     time: '',
     category: 0
 }
-const initDrafts = {}
 const Write: React.FC<IProps> = ({ categories, authorId }) => {
     const dispatch = useDispatch()
     const [hash, setHash] = useState<string>('')
     const [value, setValue] = useState<string>('')
     const [draft, setDraft] = useState<IDraft>(initDraft)
-    const [drafts, setDrafts] = useLocalStorageState<IDrafts>(SAVE_KEY, initDrafts)
+    const [drafts, setDrafts] = useLocalStorageState<IDrafts>(SAVE_KEY, {})
     const location = useLocation()
 
     // const { run } = useDebounceFn(
@@ -90,26 +91,23 @@ const Write: React.FC<IProps> = ({ categories, authorId }) => {
         return hash
     }
 
-    const handleTitleChange = useCallback(
-        (e: React.ChangeEvent<HTMLInputElement>) => setDraft({ ...draft, title: e.target.value }),
-        []
-    )
+    const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => setDraft({ ...draft, title: e.target.value })
 
-    const handleCategoryChange = useCallback((category: number) => setDraft({ ...draft, category }), [])
+    const handleCategoryChange = (category: number) => setDraft({ ...draft, category })
 
-    const handleTimeChange = useCallback((_timeObj: Moment | null, time: string) => setDraft({ ...draft, time }), [])
+    const handleTimeChange = (_timeObj: Moment | null, time: string) => setDraft({ ...draft, time })
 
-    const handleChange = useCallback((editorState: EditorState) => {
+    const handleChange = (editorState: EditorState) => {
         const content = editorState.toRAW()
         setValue(content)
         setDraft({ ...draft, content })
-    }, [])
+    }
 
-    const handleSave = useCallback(() => {
+    const handleSave = () => {
         setDrafts({ ...drafts, [hash]: { ...draft, saveTime: moment().format('YYYY-MM-DD HH:mm:ss') } })
-    }, [])
+    }
 
-    const handlePublish = useCallback(() => {
+    const handlePublish = () => {
         const { title, category, content } = draft
         const callback = () => {
             const tmp = { ...drafts }
@@ -128,7 +126,13 @@ const Write: React.FC<IProps> = ({ categories, authorId }) => {
             },
             callback
         })
-    }, [authorId, drafts])
+    }
+
+    const hasSaveDraft = () => {
+        const curDraft = drafts[hash]
+        if (!curDraft) return false
+        return (Object.keys(draft) as IDraftKey[]).every((key) => key === 'saveTime' || draft[key] === curDraft[key])
+    }
 
     const SelectOptions = useMemo(
         () =>
@@ -140,37 +144,40 @@ const Write: React.FC<IProps> = ({ categories, authorId }) => {
         [categories]
     )
 
-    const browseDraft = useCallback((hash: string) => {
+    const browseDraft = (hash: string) => {
         setHash(hash)
         router.replace(`/write?hash=${hash}`)
-    }, [])
+    }
 
     //  函数重载
     //  当 hash 为 string 删除该指定草稿
     //  当 hash 为 boolean 且为 true 时，删除全部草稿
-    const delDraft = useCallback(
-        (hash: string | boolean) => {
-            Modal.confirm({
-                title: '确定删除该草稿？',
-                onOk: () => {
-                    if (typeof hash === 'boolean' && hash) {
-                        setDrafts({})
-                        return
-                    } else {
-                        const { [hash as string]: draftToDel, ...restDrafts } = drafts
-                        setDrafts(restDrafts)
-                    }
+    const delDraft = (hash: string | boolean) => {
+        const isDelAllDrafts = typeof hash === 'boolean' && hash
+        const modalTitle = isDelAllDrafts ? '是否删除全部草稿？' : '是否删除该草稿？'
+        Modal.confirm({
+            title: modalTitle,
+            onOk: () => {
+                if (isDelAllDrafts) {
+                    setDrafts({})
+                } else {
+                    const { [hash as string]: draftToDel, ...restDrafts } = drafts
+                    setDrafts(restDrafts)
                 }
-            })
-        },
-        [drafts]
-    )
+            }
+        })
+    }
 
     const listItemExtra = useCallback(
         (hash: string) => (
             <>
-                <Icon className={styles.list_icon} component={BrowseSVG} onClick={() => browseDraft(hash)} />
-                <Icon className={styles.list_icon} component={DelSVG} onClick={() => delDraft(hash)} />
+                <Icon
+                    className={styles.list_icon}
+                    component={BrowseSVG}
+                    onClick={() => browseDraft(hash)}
+                    title="查看"
+                />
+                <Icon className={styles.list_icon} component={DelSVG} onClick={() => delDraft(hash)} title="删除" />
             </>
         ),
         [browseDraft, delDraft]
