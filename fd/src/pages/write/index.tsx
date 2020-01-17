@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react'
 import { connect, useDispatch } from 'dva'
 import { Divider, Button, Form, Input, DatePicker, Select, List, Icon, Modal } from 'antd'
 import moment, { Moment } from 'moment'
-import BraftEditor, { EditorState } from 'braft-editor'
+import BraftEditor, { EditorState, ExtendControlType } from 'braft-editor'
 import 'braft-editor/dist/index.css'
 import styles from './index.less'
 import { useLocalStorageState } from '@umijs/hooks'
@@ -14,6 +14,8 @@ import { router } from 'umi'
 import { useLocation } from 'react-router'
 import DelSVG from 'icons/close.svg'
 import BrowseSVG from 'icons/browse.svg'
+import showdown from 'showdown'
+const converter = new showdown.Converter()
 
 interface IProps extends connectProps {
     categories: ICategory[]
@@ -51,6 +53,31 @@ const Write: React.FC<IProps> = ({ categories, authorId }) => {
     const [draft, setDraft] = useState<IDraft>(initDraft)
     const [drafts, setDrafts] = useLocalStorageState<IDrafts>(SAVE_KEY, {})
     const location = useLocation()
+
+    const MD2BF: ExtendControlType = {
+        key: 'custom-md2bf',
+        type: 'button',
+        title: '解析 markdown 文件',
+        text: (
+            <div style={{ width: 14 }}>
+                <input type="file" id="file" name="file" accept=".md" style={{ width: 0, height: 0 }} />
+                <Icon type="upload" />
+            </div>
+        ),
+        onClick: () => {
+            const file = document.getElementById('file')
+            file?.click()
+
+            file!.onchange = ({ target }) => {
+                const reader = new FileReader()
+                reader.onload = (res) => {
+                    const transformHtml = converter.makeHtml(reader.result)
+                    setValue(BraftEditor.createEditorState(transformHtml))
+                }
+                reader.readAsText(target.files[0], 'utf-8')
+            }
+        }
+    }
 
     // const { run } = useDebounceFn(
     //     () => {
@@ -202,7 +229,9 @@ const Write: React.FC<IProps> = ({ categories, authorId }) => {
                 <BraftEditor
                     value={value}
                     onChange={handleChange}
-                    // onSave={this.submitContent}
+                    extendControls={['separator', MD2BF]}
+                    className={styles.bf_container}
+                    contentClassName={styles.bf_content}
                 />
             </div>
             <div className={styles.sider_wrapper}>
