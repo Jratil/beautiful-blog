@@ -48,7 +48,7 @@ const AppModal: IAppModal = {
     effects: {
         *getUserInfo({ payload }, { call, put }) {
             const userInfo = yield call(authQueryByAccount, payload)
-            yield put({ type: 'updateState', payload: { userInfo } })
+            yield put({ type: 'updateState', payload: { userInfo: userInfo ? userInfo : {} } })
         },
         *logout(_, { call }) {
             yield call(authLogout)

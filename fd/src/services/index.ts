@@ -2,6 +2,7 @@ import axios from 'axios'
 import { notification } from 'antd'
 import api from './api'
 import Cookies from 'js-cookie'
+import { router } from 'umi'
 
 const instance = axios.create({
     // baseURL: 'http://api.jratil.co:8866/'
@@ -56,6 +57,10 @@ instance.interceptors.response.use(
             message: `出错了5555，error code: ${code}`,
             description: message
         })
+        if (code === 10) {
+            router.push('/login')
+            return
+        }
     },
     (err) => {
         const { status, statusText } = err.response

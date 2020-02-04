@@ -42,12 +42,10 @@ const ArticleList: React.FC<IProps> = ({ articleData, authorId }) => {
     }
 
     return (
-        <>
-            <div className={styles.articles_wrapper}>
-                {ListContent}
-                <XPagination onChange={handleChange} total={total} {...params} />
-            </div>
-        </>
+        <div className={styles.articles_wrapper}>
+            {ListContent}
+            <XPagination onChange={handleChange} total={total} {...params} />
+        </div>
     )
 }
 
