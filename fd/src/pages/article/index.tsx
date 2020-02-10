@@ -28,7 +28,7 @@ const Page: React.FC<IProps> = ({ detail, categories }) => {
     const { articleTitle, articleContent, categoryId, articleLike, hasLike } = detail
     useEffect(() => {
         dispatch({ type: 'article/get', payload: { articleId } })
-        dispatch({ type: 'category/get', payload: { articleId } })
+        // dispatch({ type: 'category/get', payload: { articleId } })
     }, [])
 
     const categoryName = useMemo(() => categories.find((r) => r.id === categoryId)?.name, [categories, categoryId])

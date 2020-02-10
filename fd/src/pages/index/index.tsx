@@ -27,7 +27,7 @@ const Home: React.FC<IProps> = ({ articles, authorId }) => {
 
     useEffect(() => {
         // getArticles()
-        getCategories()
+        if (authorId) getCategories()
     }, [authorId])
 
     // useEffect(() => {

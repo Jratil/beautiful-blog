@@ -23,6 +23,7 @@ const Login: React.FC<IProps> = ({ form, loading }) => {
         message.success('登录成功！')
         dispatch({ type: 'app/getUserInfo', payload: { account: form.getFieldValue('account') } })
         router.push('/')
+        window.location.reload()
     }
 
     const handleSubmit = (evt: React.FormEvent<HTMLFormElement>) => {

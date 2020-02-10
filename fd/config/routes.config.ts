@@ -11,6 +11,12 @@ export const PATH_WITH_LAYOUT = [
         exclude: true,
         component: './article/index'
     },
+    {
+        path: '/user',
+        title: '个人资料',
+        exclude: true,
+        component: './user/index'
+    },
     // {
     //     path: '/category',
     //     type: 'home',
