@@ -49,7 +49,7 @@ public class RoleAuthenticationFilter extends BasicAuthenticationFilter {
 
     private Authentication getAuthentication(String token) {
         Integer id = JwtUtils.getIdByToken(token);
-        log.info("id={}", id);
+        log.debug("id={}", id);
         List<GrantedAuthority> authorities = JwtUtils.getRolesByToken(token);
         if (!StringUtils.isEmpty(id)) {
             return  new UsernamePasswordAuthenticationToken(id, null, authorities);

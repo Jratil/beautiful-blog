@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -45,6 +46,19 @@ public abstract class AbstractController<T> {
             throw new GlobalException(ResponseEnum.PARAM_ERROR);
         }
     }
+
+    /**
+     * 检查 Validate 校验的异常
+     * @param result
+     * @param obj
+     */
+    protected void checkBindindResult(BindingResult result, Object obj) {
+        if (result.hasErrors()) {
+            log.error("【文章操作】添加文章，文章参数不正确，obj={}", obj);
+            throw new GlobalException(result.getFieldError().getDefaultMessage());
+        }
+    }
+
 //    protected void checkParam(String paramName, Object obj, Class clazz) {
 //        Logger logger = LoggerFactory.getLogger(clazz);
 //        if (StringUtils.isEmpty(obj)) {

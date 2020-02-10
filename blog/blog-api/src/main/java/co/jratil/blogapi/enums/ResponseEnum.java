@@ -1,7 +1,9 @@
 package co.jratil.blogapi.enums;
 
+import io.swagger.annotations.ApiModel;
 import lombok.Getter;
 
+@ApiModel
 @Getter
 public enum ResponseEnum {
 
@@ -24,6 +26,8 @@ public enum ResponseEnum {
     ARTICLE_NOT_EXIST(102, "文章不存在"),
     AUTHOR_NOT_ARTICLE(103, "用户没有文章"),
     ADD_ARTICLE_ERROR(104, "添加文章出错"),
+    // 评论类
+    COMMENT_NOT_EXIST(150, "评论不存在"),
     // 其他类code
     // 邮件类
     VERIFY_CODE_QUICKLY(1000, "验证码发送次数过快，请2分钟后再试"),
@@ -31,8 +35,10 @@ public enum ResponseEnum {
     // 参数验证类
     PARAM_ERROR(1100, "参数错误"),
     VERIFY_NOT_EQUAL(1101, "验证码错误"),
-    FILE_NOT_EXIST(2000, "文件为空"),
-    SERVER_FILE_DELETE_ERROR(2001, "删除服务器文件出错");
+    FILE_EMPTY(2000, "文件为空"),
+    SERVER_FILE_DELETE_ERROR(2001, "删除服务器文件出错"),
+    PICTURE_TOO_BIG(2002, "上传图片不能超过2M"),
+    NOT_PICTURE(2003,"上传的文件不是图片");
 
     Integer code;
 
