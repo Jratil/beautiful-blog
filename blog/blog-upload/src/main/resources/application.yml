@@ -1,0 +1,22 @@
+server:
+  port: 8872
+
+spring:
+  application:
+    name: blog-upload
+  dubbo:
+    protocol:
+      port: 21887
+    server: true
+    registry: zookeeper://localhost:2181
+
+  servlet:
+    multipart:
+      max-file-size: 2MB
+      max-request-size: 10MB
+
+qiniu:
+  bucket: blog-filess
+  link-pre: http://q3bj1a4xm.bkt.clouddn.com/
+
+

@@ -79,7 +79,7 @@ public class ArticleDTO implements Serializable {
      * 文章内容
      */
     @ApiModelProperty(name = "articleContent", value = "文章内容", required = true)
-    @Length(min = 1, max = 1000, message = "文章最少1个字，最长1000个字")
+    @Length(min = 1, max = 50000, message = "文章最少1个字，最长50000个字符")
     private String articleContent;
 
 

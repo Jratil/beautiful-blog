@@ -60,7 +60,7 @@ public class ArticleController extends AbstractController<Article> {
     @ApiImplicitParams({
             @ApiImplicitParam(value = "文章id", name = "articleId", paramType = "path")
     })
-    @GetMapping("/query/{articleId}")
+    @GetMapping("/{articleId}")
     public ResponseVO queryArticle(@PathVariable("articleId") Integer articleId) {
         this.checkParam(articleId, "articleId", this.getClass());
 
@@ -74,7 +74,7 @@ public class ArticleController extends AbstractController<Article> {
     @ApiImplicitParams({
             @ApiImplicitParam(value = "类目id", name = "categoryId", paramType = "path")
     })
-    @PostMapping("/page/category/{categoryId}")
+    @GetMapping("/page/category/{categoryId}")
     public ResponseVO pageQueryByCategoryId(@PathVariable("categoryId") Integer categoryId) {
         this.checkParam(categoryId, "categoryId", this.getClass());
 
@@ -90,7 +90,7 @@ public class ArticleController extends AbstractController<Article> {
     @ApiImplicitParams({
             @ApiImplicitParam(value = "用户id", name = "authorId", paramType = "path")
     })
-    @PostMapping("/page/{authorId}")
+    @GetMapping("/page/{authorId}")
     public ResponseVO pageQueryByAuthorId(@PathVariable("authorId") Integer authorId) {
         this.checkParam(authorId, "authorId", this.getClass());
 
@@ -101,7 +101,7 @@ public class ArticleController extends AbstractController<Article> {
     }
 
     @ApiOperation(value = "查找归档的月份", notes = "根据用户id分页查找所有的归档月份，不分页", httpMethod = "POST")
-    @PostMapping("/archive/{authorId}")
+    @GetMapping("/archives/{authorId}")
     public ResponseVO listArchiveMonthByAuthorId(@PathVariable("authorId") Integer authorId) {
         this.checkParam(authorId, "authorId", this.getClass());
 
@@ -110,8 +110,8 @@ public class ArticleController extends AbstractController<Article> {
         return ResponseUtils.success(maps);
     }
 
-    @ApiOperation(value = "批量查找文章-归档月份", notes = "根据用户id和归档月份分页查找文章接口", httpMethod = "POST")
-    @PostMapping("/archive/{authorId}/{month}")
+    @ApiOperation(value = "批量查找文章-通过归档月份", notes = "根据用户id和归档月份分页查找文章接口,月份格式：YYYY年MM月,并且进行url编码", httpMethod = "POST")
+    @GetMapping("/page/archive/{authorId}/{month}")
     public ResponseVO pageQueryByArchiveMonth(@PathVariable("authorId") Integer authorId,
                                               @PathVariable("month") String month) {
         this.checkParam(authorId, "authorId", this.getClass());
@@ -127,7 +127,7 @@ public class ArticleController extends AbstractController<Article> {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "articleDTO", value = "文章dto", dataTypeClass = ArticleDTO.class, paramType = "body")
     })
-    @PostMapping("/add")
+    @PostMapping()
     public ResponseVO add(@RequestBody @Validated ArticleDTO articleDTO, BindingResult result) {
 
         if (result.hasErrors()) {
@@ -145,7 +145,7 @@ public class ArticleController extends AbstractController<Article> {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "articleDTO", value = "文章dto", dataTypeClass = ArticleDTO.class, paramType = "body")
     })
-    @PutMapping("/update")
+    @PutMapping()
     public ResponseVO update(@RequestBody @Validated ArticleDTO articleDTO, BindingResult result) {
         if (result.hasErrors()) {
             log.error("【文章操作】修改文章，文章参数不正确，articleDTO={}", articleDTO);
@@ -167,7 +167,7 @@ public class ArticleController extends AbstractController<Article> {
     @ApiImplicitParams({
             @ApiImplicitParam(value = "文章id", name = "articleId", paramType = "path")
     })
-    @DeleteMapping("/delete/{articleId}")
+    @DeleteMapping("/{articleId}")
     public ResponseVO delete(@PathVariable("articleId") Integer articleId) {
 
         this.checkParam(articleId, "articleId", this.getClass());
@@ -187,7 +187,7 @@ public class ArticleController extends AbstractController<Article> {
     @ApiImplicitParams({
             @ApiImplicitParam(value = "文章id", name = "articleId", paramType = "path")
     })
-    @PostMapping("/like/{articleId}")
+    @PutMapping("/like/{articleId}")
     public ResponseVO addLike(@PathVariable("articleId") Integer articleId) {
         this.checkParam(articleId, "articleId", this.getClass());
 

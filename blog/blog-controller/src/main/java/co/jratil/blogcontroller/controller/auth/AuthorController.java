@@ -83,7 +83,7 @@ public class AuthorController extends AbstractController {
     }
 
     @ApiOperation(value = "查找用户", notes = "按用户id查找用户信息", httpMethod = "GET")
-    @GetMapping("/query/id/{authorId}")
+    @GetMapping("/id/{authorId}")
     public ResponseVO queryAuthorById(@PathVariable("authorId") Integer authorId) {
         this.checkParam(authorId, "authorId", this.getClass());
 
@@ -92,7 +92,7 @@ public class AuthorController extends AbstractController {
     }
 
     @ApiOperation(value = "查找用户", notes = "按用户account查找用户信息", httpMethod = "GET")
-    @GetMapping("/query/account/{account}")
+    @GetMapping("/account/{account}")
     public ResponseVO queryAuthorByAccount(@PathVariable("account") String authorAccount) {
         this.checkParam(authorAccount, "authorAccount", this.getClass());
 
@@ -101,7 +101,7 @@ public class AuthorController extends AbstractController {
     }
 
     @ApiOperation(value = "模糊名称分页查找", notes = "按模糊名称分页查找用户", httpMethod = "POST")
-    @PostMapping("/page/{blurName}")
+    @GetMapping("/page/{blurName}")
     public ResponseVO pageQueryByBlurName(@PathVariable("blurName") String blurName, HttpServletRequest request) {
         this.checkParam(blurName, "blurName", this.getClass());
 
@@ -112,7 +112,7 @@ public class AuthorController extends AbstractController {
     }
 
     @ApiOperation(value = "按注册时间查找用户，", notes = "按注册时间分页查找用户", httpMethod = "POST")
-    @PostMapping("/page")
+    @GetMapping("/page")
     public ResponseVO pageQuery(HttpServletRequest request) {
 
         PageParam pageParam = new PageParam(getPage(), getCount());
@@ -124,7 +124,7 @@ public class AuthorController extends AbstractController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "authorDTO", value = "修改信息所需要穿的json", dataTypeClass = AuthorDTO.class, example = "{\"name\":\"1\",\n\"email\":\"123\",\n\"password\":\"123\",\n\"verify-code\":\"1234\"}", paramType = "body")
     })
-    @PutMapping("/update")
+    @PutMapping()
     public ResponseVO updateAuthor(@RequestBody AuthorDTO authorDTO) {
         if (authorDTO == null || authorDTO.getAuthorId()==null || authorDTO.getAuthorAccount() == null) {
             log.error("【用户修改信息】参数错误，authorDTO = {}", authorDTO);
@@ -139,7 +139,7 @@ public class AuthorController extends AbstractController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "authorForm", value = "修改密码所需的json", dataTypeClass = AuthorForm.class, example = "{\"email\":\"123\",\n\"password\":\"123\", \n\"verify-code\":\"1234\"}", paramType = "body")
     })
-    @PutMapping("/update/password")
+    @PutMapping("/password")
     public ResponseVO forgetPassword(@Validated(AuthorForm.ForgetPassword.class) @RequestBody AuthorForm authorForm,
                                      BindingResult bindingResult) {
 
@@ -155,7 +155,7 @@ public class AuthorController extends AbstractController {
 
     @ApiOperation(value = "删除用户", notes = "根据用户id删除用户-需要管理员权限", httpMethod = "DELETE")
     @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/delete/{authorId}")
+    @DeleteMapping("/{authorId}")
     public ResponseVO deleteAuthor(@PathVariable("authorId") Integer authorId) {
         this.checkParam(authorId, "authorId", this.getClass());
 
