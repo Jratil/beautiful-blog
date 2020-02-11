@@ -5,6 +5,8 @@ import co.jratil.blogapi.entity.dataobject.Comment;
 import co.jratil.blogapi.entity.dto.CommentDTO;
 import com.github.pagehelper.PageInfo;
 
+import java.util.List;
+
 public interface CommentService {
 
     CommentDTO getById(Integer commentId);
@@ -23,6 +25,8 @@ public interface CommentService {
     void update(Comment comment);
 
     void delete(Integer commentId);
+
+    List<Integer> getLikeIds(Integer authorId, Integer articleId);
 
     int switchPraise(Integer authorId, Integer commentId);
 }

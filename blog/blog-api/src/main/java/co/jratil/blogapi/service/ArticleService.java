@@ -27,17 +27,13 @@ public interface ArticleService {
 
     void update(ArticleDTO articleDTO);
 
+    Boolean getLikeStatus(Integer authorId, Integer articleId);
+
     /**
-     * 喜欢量增加
+     * 切换喜欢
+     * @Param authorId 点赞的用户id
      * @param articleId 文章id
      * @return 返回点赞后的喜欢的数量
      */
-    Integer saveOrUpdateLike(Integer articleId);
-
-    /**
-     * 取消喜欢
-     * @param articleId 文章id
-     * @return  返回取消后的喜欢的数量
-     */
-    Integer removeOrUpdateLike(Integer articleId);
+    Integer switchLike(Integer authorId, Integer articleId);
 }

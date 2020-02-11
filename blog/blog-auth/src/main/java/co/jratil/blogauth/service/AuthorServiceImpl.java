@@ -108,7 +108,7 @@ public class AuthorServiceImpl extends AbstractService implements AuthorService 
      * @param authorId 用户id
      * @return 用户信息
      */
-    @Cacheable(value = "getById", key = "#authorId")
+    @Cacheable(value = "AuthorService::getById", key = "#authorId")
     @Override
     public AuthorDTO getById(Integer authorId) {
         Author author = authorMapper.selectById(authorId);
@@ -126,7 +126,7 @@ public class AuthorServiceImpl extends AbstractService implements AuthorService 
      * @param account
      * @return
      */
-    @Cacheable(value = "getByAccount", key = "#account")
+    @Cacheable(value = "AuthorService::getByAccount", key = "#account")
     @Override
     public AuthorDTO getByAccount(String account) {
         Author author = authorMapper.selectOne(new QueryWrapper<Author>().eq("author_account", account));
@@ -143,7 +143,7 @@ public class AuthorServiceImpl extends AbstractService implements AuthorService 
      * @param name
      * @return
      */
-    @Cacheable(value = "getByName", key = "#name")
+    @Cacheable(value = "AuthorService::getByName", key = "#name")
     @Override
     public AuthorDTO getByName(String name) {
         Author author = authorMapper.selectOne(new QueryWrapper<Author>().eq("author_name", name));
@@ -194,11 +194,6 @@ public class AuthorServiceImpl extends AbstractService implements AuthorService 
      *
      * @param authorDTO
      */
-    @Caching(evict = {
-            @CacheEvict(value = "getById", allEntries = true),
-            @CacheEvict(value = "getByAccount", allEntries = true),
-            @CacheEvict(value = "getByName", allEntries = true)
-    })
     @Transactional
     @Override
     public void insertAuthor(AuthorDTO authorDTO) {
@@ -230,9 +225,9 @@ public class AuthorServiceImpl extends AbstractService implements AuthorService 
     }
 
     @Caching(evict = {
-            @CacheEvict(value = "getById", key = "#authorDTO.getAuthorId()"),
-            @CacheEvict(value = "getByAccount", key = "#authorDTO.getAuthorAccount()"),
-            @CacheEvict(value = "getByName", allEntries = true)
+            @CacheEvict(value = "AuthorService::getById", key = "#authorDTO.getAuthorId()"),
+            @CacheEvict(value = "AuthorService::getByAccount", key = "#authorDTO.getAuthorAccount()"),
+            @CacheEvict(value = "AuthorService::getByName", allEntries = true)
     })
     @Transactional
     @Override
@@ -254,7 +249,11 @@ public class AuthorServiceImpl extends AbstractService implements AuthorService 
         }
     }
 
-    @CacheEvict(value = "getByAccount", key = "#authorForm.getAuthorAccount()")
+    @Caching(evict = {
+            @CacheEvict(value = "AuthorService::getById", allEntries = true),
+            @CacheEvict(value = "AuthorService::getByAccount", key = "#authorForm.getAuthorAccount()"),
+            @CacheEvict(value = "AuthorService::getByName", key = "#authorForm.getAuthorName()")
+    })
     @Transactional
     @Override
     public void updatePassword(AuthorForm authorForm) {
@@ -274,7 +273,7 @@ public class AuthorServiceImpl extends AbstractService implements AuthorService 
     }
 
     @Caching(evict = {
-            @CacheEvict(value = "getById", allEntries = true),
+            @CacheEvict(value = "getById", key = "#authorId"),
             @CacheEvict(value = "getByAccount", allEntries = true),
             @CacheEvict(value = "getByName", allEntries = true)
     })

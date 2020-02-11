@@ -30,7 +30,7 @@ public class ArticleCategoryServiceImpl extends AbstractService<ArticleCategory>
     @Autowired
     private ArticleCategoryMapper categoryMapper;
 
-    @Cacheable(value = "getById", key = "#categoryId")
+    @Cacheable(value = "ArticleCategoryService::getById", key = "#categoryId")
     @Override
     public ArticleCategory getById(Integer categoryId) {
 
@@ -44,7 +44,7 @@ public class ArticleCategoryServiceImpl extends AbstractService<ArticleCategory>
         return category;
     }
 
-    @Cacheable(value = "getByNameAndAuthorId", key = "#categoryName")
+    @Cacheable(value = "ArticleCategoryService::getByNameAndAuthorId", key = "#categoryName + '_' + #authorId")
     @Override
     public ArticleCategory getByNameAndAuthorId(String categoryName, Integer authorId) {
 
@@ -76,8 +76,8 @@ public class ArticleCategoryServiceImpl extends AbstractService<ArticleCategory>
     }
 
     @Caching(evict = {
-            @CacheEvict(value = "getById", allEntries = true),
-            @CacheEvict(value = "getByNameAndAuthorId", allEntries = true)
+//            @CacheEvict(value = "ArticleCategoryService::getById", allEntries = true),
+            @CacheEvict(value = "ArticleCategoryService::getByNameAndAuthorId", allEntries = true)
     })
     @Transactional
     @Override
@@ -97,7 +97,7 @@ public class ArticleCategoryServiceImpl extends AbstractService<ArticleCategory>
         categoryMapper.insert(category);
     }
 
-    @CacheEvict(value = "getById", key = "#category.getCategoryId()")
+    @CacheEvict(value = "ArticleCategoryService::getById", key = "#category.getCategoryId()")
     @Transactional
     @Override
     public void update(ArticleCategory category) {
@@ -109,7 +109,7 @@ public class ArticleCategoryServiceImpl extends AbstractService<ArticleCategory>
         categoryMapper.updateById(result);
     }
 
-    @CacheEvict(value = "getById", key = "#categoryId")
+    @CacheEvict(value = "ArticleCategoryService::getById", key = "#categoryId")
     @Transactional
     @Override
     public void remove(Integer categoryId) {

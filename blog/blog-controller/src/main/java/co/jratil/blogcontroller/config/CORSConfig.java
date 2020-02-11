@@ -1,3 +1,4 @@
+/*
 package co.jratil.blogcontroller.config;
 
 import org.springframework.context.annotation.Configuration;
@@ -6,18 +7,22 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+*/
 /**
  * @author jun
  * @version 1.0.0
  * @date 2019-12-10 16:13
- */
+ *//*
+
 @Configuration
 public class CORSConfig implements WebMvcConfigurer {
 
-    /**
+    */
+/**
      * 添加 swagger 的静态资源目录
      * @param registry
-     */
+     *//*
+
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("swagger-ui.html")
@@ -27,10 +32,12 @@ public class CORSConfig implements WebMvcConfigurer {
                 .addResourceLocations("classpath:/META-INF/resources/webjars/");
     }
 
-    /**
+    */
+/**
      * 实现 swagger 路径跳转
      * @param registry
-     */
+     *//*
+
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
         registry.addViewController("/swagger").setViewName("swagger-ui.html");
@@ -48,3 +55,4 @@ public class CORSConfig implements WebMvcConfigurer {
                 .maxAge(3600);
     }
 }
+*/
