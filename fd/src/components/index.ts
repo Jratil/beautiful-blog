@@ -1,3 +1,4 @@
+import XAvatar from './XAvatar'
 import XPagination from './XPagination'
 
-export { XPagination }
+export { XAvatar, XPagination }

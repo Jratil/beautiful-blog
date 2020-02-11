@@ -7,15 +7,17 @@ import styles from './index.less'
 import { ctx } from '../index'
 import { PATH_WITH_LAYOUT } from '../../../config/routes.config'
 import { connectState } from '@/models/connect'
+import { XAvatar } from '@/components'
 
 interface IProps {
     avatarSrc: string
+    authorName: string
 }
 
 const { Header } = Layout
 const MenuItem = Menu.Item
 
-const CustomHeader: React.FC<IProps> = ({ avatarSrc, dispatch: _dispatch, ...restProps }) => {
+const CustomHeader: React.FC<IProps> = ({ avatarSrc, authorName, ...restProps }) => {
     const dispatch = useDispatch()
     const pathname = useContext(ctx)
     const { isFullscreen, toggleFull } = useFullscreen({ dom: document.body })
@@ -35,9 +37,11 @@ const CustomHeader: React.FC<IProps> = ({ avatarSrc, dispatch: _dispatch, ...res
     )
     return (
         <Header {...restProps}>
-            <div className={styles.logo} />
+            <div className={styles.logo}>Ratil Blog</div>
             <Dropdown overlay={dropdownMenu} placement="bottomRight">
-                <Avatar className={styles.avatar} src={avatarSrc} />
+                <div className={styles.avatar}>
+                    <XAvatar avatarSrc={avatarSrc} name={authorName} />
+                </div>
             </Dropdown>
             <Icon
                 type={isFullscreen ? 'fullscreen-exit' : 'fullscreen'}
@@ -56,5 +60,6 @@ const CustomHeader: React.FC<IProps> = ({ avatarSrc, dispatch: _dispatch, ...res
 }
 
 export default connect(({ app }: connectState) => ({
-    avatarSrc: app.userInfo.authorAvatar
+    avatarSrc: app.userInfo.authorAvatar,
+    authorName: app.userInfo.authorName
 }))(CustomHeader)
