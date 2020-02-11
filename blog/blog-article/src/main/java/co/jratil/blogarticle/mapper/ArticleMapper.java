@@ -28,10 +28,10 @@ public interface ArticleMapper extends BaseMapper<Article> {
     @Select("select article_id from t_praise_article where author_id = #{authorId}")
     List<Integer> selectLikeArticleIds(@Param("authorId") Integer authorId);
 
-    @Update("update t_article set article_like = #{articleLike}")
-    int updateArticleLikeNum(@Param("articleLikeNum") Integer articleLikeNum);
+    @Update("update t_article set article_like = #{articleLikeNum} where article_id = #{articleId}")
+    int updateArticleLikeNum(@Param("articleLikeNum") Integer articleLikeNum, @Param("articleId")Integer articleId);
 
-    @Select("select article_id from t_praise_article where author_id = #{authorId} and article_id = #{articleId}")
+    @Select("select count(article_id) from t_praise_article where author_id = #{authorId} and article_id = #{articleId}")
     int selectLikeStatus(@Param("articleId") Integer articleId, @Param("authorId") Integer authorId);
 
     @Insert("insert into t_praise_article (article_id, author_id) values (#{articleId}, #{authorId})")

@@ -249,11 +249,11 @@ public class ArticleServiceImpl extends AbstractService<Article> implements Arti
         if (result > 0) {
             praise = praise - 1;
             articleMapper.deleteLikeArticleId(articleId, authorId);
-            articleMapper.updateArticleLikeNum(praise);
+            articleMapper.updateArticleLikeNum(praise, articleId);
         } else {
             praise = praise + 1;
             articleMapper.saveLikeArticleId(articleId, authorId);
-            articleMapper.updateArticleLikeNum(praise);
+            articleMapper.updateArticleLikeNum(praise, articleId);
         }
 
         return praise;
