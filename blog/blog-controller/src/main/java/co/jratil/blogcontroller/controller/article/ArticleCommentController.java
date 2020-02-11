@@ -21,6 +21,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * @author jun
  * @version 1.0.0
@@ -62,7 +64,7 @@ public class ArticleCommentController extends AbstractController<Comment> {
         return ResponseUtils.success(comments);
     }
 
-    @ApiOperation(value = "分页查找评论", notes = "根据一级评论id分页查找评论", httpMethod = "GET")
+    @ApiOperation(value = "分页查找评论", notes = "根据一级评论id分页查找评论，通过一级评论查出二级评论，对于删除了的二级评论会显示该评论已删除", httpMethod = "GET")
     @ApiImplicitParams({
             @ApiImplicitParam(value = "评论id", name = "commentId", paramType = "path")
     })
@@ -105,7 +107,19 @@ public class ArticleCommentController extends AbstractController<Comment> {
         return ResponseUtils.success();
     }
 
-    @ApiOperation(value = "切换喜欢", notes = "如果是点过了则会取消，没点过会点赞，自动切换，只需要把点赞的id传过来就好", httpMethod = "PUT")
+    @ApiOperation(value = "查询文章中所有点赞了的评论", notes = "不分页，一次性查出一篇文章中所有的点赞了的评论，结果为list", httpMethod = "PUT")
+    @ApiImplicitParams({
+            @ApiImplicitParam(value = "文章id", name = "articleId", paramType = "path")
+    })
+    @GetMapping("/like/{articleId}")
+    public ResponseVO getLikeIds(@PathVariable("articleId") Integer articleId) {
+        checkParam(articleId, "articleId", getClass());
+
+        List<Integer> likeIds = commentService.getLikeIds(SecurityUtils.getAuthorId(), articleId);
+        return ResponseUtils.success(likeIds);
+    }
+
+    @ApiOperation(value = "切换喜欢", notes = "会自动判断点赞状态，只需要把点赞的id传过来就好", httpMethod = "PUT")
     @ApiImplicitParams({
             @ApiImplicitParam(value = "评论id", name = "commentId", paramType = "path")
     })

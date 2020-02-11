@@ -10,19 +10,21 @@ import co.jratil.blogapi.service.AuthorService;
 import co.jratil.blogapi.service.CommentService;
 import co.jratil.blogarticle.constant.ArticleConstant;
 import co.jratil.blogarticle.mapper.CommentMapper;
-import co.jratil.blogsecurity.util.JwtUtils;
-import co.jratil.blogsecurity.util.SecurityUtils;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.dubbo.config.annotation.Service;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -45,6 +47,7 @@ public class CommentServiceImpl implements CommentService {
     @Autowired
     private ArticleService articleService;
 
+    @Cacheable(value = "CommentService::getById", key = "#commentId")
     @Override
     public CommentDTO getById(Integer commentId) {
 
@@ -96,8 +99,8 @@ public class CommentServiceImpl implements CommentService {
         // 查询并且判断该评论是否存在
         this.getById(parentCommentId);
 
-        QueryWrapper<Comment> wrapper = buildWrapper();
-        wrapper.lambda()
+        // 因为通过一级评论查出二级评论，对于删除了的二级评论会显示该评论已删除，所以需要把已删除状态的评论也查出来，不能用buildWrapper()
+        LambdaQueryWrapper<Comment> wrapper = Wrappers.<Comment>lambdaQuery()
                 .eq(Comment::getParentCommentId, parentCommentId)
                 .eq(Comment::getCommentLevel, 2);
 
@@ -107,6 +110,7 @@ public class CommentServiceImpl implements CommentService {
         return secondDosToDtos(comments);
     }
 
+    @Transactional
     @Override
     public void save(Comment comment) {
 
@@ -132,17 +136,28 @@ public class CommentServiceImpl implements CommentService {
         commentMapper.insert(comment);
     }
 
+    @CacheEvict(value = "CommentService::getById", allEntries = true)
+    @Transactional
     @Override
     public void update(Comment comment) {
         // 不能修改评论，只能删除，先留着
     }
 
+    @CacheEvict(value = "CommentService::getById", allEntries = true)
+    @Transactional
     @Override
     public void delete(Integer commentId) {
         // 逻辑删除
         commentMapper.deleteComment(commentId);
     }
 
+    @Override
+    public List<Integer> getLikeIds(Integer authorId, Integer articleId) {
+        List<Integer> praiseCommentIds = commentMapper.selectPraiseCommentIds(authorId, articleId);
+        return praiseCommentIds;
+    }
+
+    @Transactional
     @Override
     public synchronized int switchPraise(Integer authorId, Integer commentId) {
         CommentDTO commentDTO = getById(commentId);
@@ -153,7 +168,7 @@ public class CommentServiceImpl implements CommentService {
 
         // 如果点赞列表里面包含了该评论，则取消点赞
         // 否则点赞+1
-        if (commentIds.contains(commentId) && praise > 0) {
+        if (commentIds.contains(commentId)) {
             praise = praise - 1;
             commentMapper.deletePraise(authorId, commentId);
             commentMapper.updatePraiseNum(commentId, praise);

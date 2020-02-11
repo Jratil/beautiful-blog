@@ -46,7 +46,7 @@ public class ArticleServiceImpl extends AbstractService<Article> implements Arti
     @Reference
     private AuthorService authorService;
 
-    @Cacheable(value = "getById", key = "#articleId")
+    @Cacheable(value = "ArticleService::getById", key = "#articleId")
     @Override
     public ArticleDTO getById(Integer articleId) {
 
@@ -178,7 +178,6 @@ public class ArticleServiceImpl extends AbstractService<Article> implements Arti
         return dosToDtos(articles);
     }
 
-    @CacheEvict(value = "getById", allEntries = true)
     @Transactional
     @Override
     public void save(ArticleDTO articleDTO) {
@@ -198,7 +197,7 @@ public class ArticleServiceImpl extends AbstractService<Article> implements Arti
         }
     }
 
-    @CacheEvict(value = "getById", key = "#articleId")
+    @CacheEvict(value = "ArticleService::getById", key = "#articleId")
     @Transactional
     @Override
     public void remove(Integer articleId) {
@@ -210,7 +209,7 @@ public class ArticleServiceImpl extends AbstractService<Article> implements Arti
         articleMapper.deleteById(articleId);
     }
 
-    @CacheEvict(value = "getById", key = "#articleDTO.getArticleId()")
+    @CacheEvict(value = "ArticleService::getById", key = "#articleDTO.getArticleId()")
     @Transactional
     @Override
     public void update(ArticleDTO articleDTO) {
@@ -227,52 +226,37 @@ public class ArticleServiceImpl extends AbstractService<Article> implements Arti
         articleMapper.updateById(article);
     }
 
+    @Override
+    public Boolean getLikeStatus(Integer authorId, Integer articleId) {
+        int result = articleMapper.selectLikeStatus(articleId, authorId);
+        return result > 0;
+    }
+
     /**
      * 增加文章喜欢数
      *
      * @param articleId 文章id
      * @return 点击之后的喜欢的数量
      */
-    @Cacheable(value = "addArticleLike", key = "'article_'+#articleId")
     @Transactional
     @Override
-    public synchronized Integer saveOrUpdateLike(Integer articleId) {
+    public synchronized Integer switchLike(Integer authorId, Integer articleId) {
 
-        Integer articleLike = selectLike(articleId);
-        articleLike = articleLike + 1;
+        ArticleDTO articleDTO = this.getById(articleId);
+        int result = articleMapper.selectLikeStatus(articleId, authorId);
+        int praise = articleDTO.getArticleLike();
 
-        articleMapper.updateArticleLike(articleLike);
-
-        return articleLike;
-    }
-
-
-    /**
-     * 减少文章喜欢数
-     *
-     * @param articleId 文章id
-     * @return 点击之后的喜欢的数量
-     */
-    @Cacheable(value = "article", key = "'article_'+#articleId")
-    @Transactional
-    @Override
-    public synchronized Integer removeOrUpdateLike(Integer articleId) {
-
-        Integer articleLike = selectLike(articleId);
-        articleLike = articleLike - 1;
-
-        articleMapper.updateArticleLike(articleLike);
-
-        return articleLike;
-    }
-
-    private Integer selectLike(Integer articleId) {
-        Integer articleLike = articleMapper.selectLike(articleId);
-        if (articleLike == null) {
-            log.error("【文章服务】增加喜欢出错，文章不存在，articleId={}", articleId);
-            throw new GlobalException(ResponseEnum.ARTICLE_NOT_EXIST);
+        if (result > 0) {
+            praise = praise - 1;
+            articleMapper.deleteLikeArticleId(articleId, authorId);
+            articleMapper.updateArticleLikeNum(praise);
+        } else {
+            praise = praise + 1;
+            articleMapper.saveLikeArticleId(articleId, authorId);
+            articleMapper.updateArticleLikeNum(praise);
         }
-        return articleLike;
+
+        return praise;
     }
 
     private PageInfo<ArticleDTO> dosToDtos(List<Article> articleList) {

@@ -182,8 +182,20 @@ public class ArticleController extends AbstractController<Article> {
         return ResponseUtils.success();
     }
 
+    @ApiOperation(value = "查询是否点赞", notes = "查询是否点赞接口，返回布尔值", httpMethod = "GET")
+    @ApiImplicitParams({
+            @ApiImplicitParam(value = "文章id", name = "articleId", paramType = "path")
+    })
+    @GetMapping("/like/{articleId}")
+    public ResponseVO getLikeStatus(@PathVariable("articleId")Integer articleId) {
+        checkParam(articleId, "articleId", getClass());
 
-    @ApiOperation(value = "点击喜欢", notes = "增加喜欢接口，返回点赞后的点赞数", httpMethod = "POST")
+        Boolean likeStatus = articleService.getLikeStatus(SecurityUtils.getAuthorId(), articleId);
+
+        return ResponseUtils.success(likeStatus);
+    }
+
+    @ApiOperation(value = "切换喜欢状态", notes = "切换喜欢接口，返回点赞后的点赞数，只需把文章id传入，会自动判断是否点赞", httpMethod = "PUT")
     @ApiImplicitParams({
             @ApiImplicitParam(value = "文章id", name = "articleId", paramType = "path")
     })
@@ -191,23 +203,7 @@ public class ArticleController extends AbstractController<Article> {
     public ResponseVO addLike(@PathVariable("articleId") Integer articleId) {
         this.checkParam(articleId, "articleId", this.getClass());
 
-        Integer articleLike = articleService.saveOrUpdateLike(articleId);
-
-        return ResponseUtils.success(articleLike);
-    }
-
-    @ApiOperation(value = "取消喜欢", notes = "取消喜欢接口", httpMethod = "DELETE")
-    @ApiImplicitParams({
-            @ApiImplicitParam(value = "文章id", name = "articleId", paramType = "path")
-    })
-    @DeleteMapping("/like/{articleId}")
-    public ResponseVO reduceLike(@PathVariable("articleId") Integer articleId) {
-        if (StringUtils.isEmpty(articleId)) {
-            log.error("【文章操作】增加喜欢出错，文章id不能为空，articleId={}", articleId);
-            throw new GlobalException(ResponseEnum.PARAM_ERROR);
-        }
-
-        Integer articleLike = articleService.removeOrUpdateLike(articleId);
+        Integer articleLike = articleService.switchLike(SecurityUtils.getAuthorId(), articleId);
 
         return ResponseUtils.success(articleLike);
     }
