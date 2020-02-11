@@ -6,17 +6,18 @@ export default {
     authRegistry: 'POST /auth/register',
     authUpdate: 'PUT /auth/update',
     authUpdatePassword: 'PUT /auth/update/password',
-    authQueryByAccount: 'GET /auth/query/account/:account',
+    authQueryByAccount: 'GET /auth/account/:account',
     authQueryById: 'GET /auth/query/account/:id',
 
     // email
     emailSend: 'POST /email/send_code',
-    articleGet: 'POST /article/page/:authorId',
+    articleGet: 'GET /article/page/:authorId',
+    articleGetByCategory: 'GET /article/page/category/:categoryId',
 
     // category
     categoryAdd: 'POST /category/add',
     categoryDelete: 'DELETE /category/delete/:categoryId',
-    categoryGet: 'POST /category/page/:authorId',
+    categoryGet: 'GET /category/page/:authorId',
     categoryUpdate: 'PUT /category/update',
 
     // article

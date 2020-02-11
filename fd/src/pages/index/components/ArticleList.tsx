@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Empty } from 'antd'
+import { Empty, Spin } from 'antd'
 import { connect, useDispatch } from 'dva'
 import Card from './Card'
 import { IArticle } from '../model'
@@ -13,6 +13,7 @@ interface IProps {
         total: number
     }
     authorId: number
+    loading: boolean
 }
 interface IParams {
     page: number
@@ -24,7 +25,7 @@ const initParams = {
     count: 10
 }
 
-const ArticleList: React.FC<IProps> = ({ articleData, authorId }) => {
+const ArticleList: React.FC<IProps> = ({ articleData, authorId, loading }) => {
     const dispatch = useDispatch()
     const [params, setParams] = useState<IParams>(initParams)
     const { list = [], total = 0 } = articleData
@@ -43,13 +44,14 @@ const ArticleList: React.FC<IProps> = ({ articleData, authorId }) => {
 
     return (
         <div className={styles.articles_wrapper}>
-            {ListContent}
+            <Spin spinning={!!loading}>{ListContent}</Spin>
             <XPagination onChange={handleChange} total={total} {...params} />
         </div>
     )
 }
 
-export default connect(({ home, app }: connectState) => ({
+export default connect(({ home, app, loading }: connectState) => ({
+    loading: loading.effects['home/getArticles'] || loading.effects['home/getArticlesByCategory'],
     articleData: home.articles,
     authorId: app.userInfo.authorId
 }))(ArticleList)
