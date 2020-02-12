@@ -1,7 +1,9 @@
 package co.jratil.blogarticle.service;
 
 import co.jratil.blogapi.entity.PageParam;
+import co.jratil.blogapi.entity.dataobject.Article;
 import co.jratil.blogapi.entity.dataobject.Comment;
+import co.jratil.blogapi.entity.dto.AuthorDTO;
 import co.jratil.blogapi.entity.dto.CommentDTO;
 import co.jratil.blogapi.enums.ResponseEnum;
 import co.jratil.blogapi.exception.GlobalException;
@@ -9,6 +11,7 @@ import co.jratil.blogapi.service.ArticleService;
 import co.jratil.blogapi.service.AuthorService;
 import co.jratil.blogapi.service.CommentService;
 import co.jratil.blogarticle.constant.ArticleConstant;
+import co.jratil.blogarticle.mapper.ArticleMapper;
 import co.jratil.blogarticle.mapper.CommentMapper;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.dubbo.config.annotation.Service;
@@ -25,6 +28,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,11 +45,11 @@ public class CommentServiceImpl implements CommentService {
     @Autowired
     private CommentMapper commentMapper;
 
+    @Autowired
+    private ArticleMapper articleMapper;
+
     @Reference
     private AuthorService authorService;
-
-    @Autowired
-    private ArticleService articleService;
 
     @Cacheable(value = "CommentService::getById", key = "#commentId")
     @Override
@@ -64,9 +68,16 @@ public class CommentServiceImpl implements CommentService {
         CommentDTO commentDTO = new CommentDTO();
         BeanUtils.copyProperties(comment, commentDTO);
 
+        int result = commentMapper.selectLikeStatus(commentId, comment.getAuthorId());
+        commentDTO.setHasLike(result > 0);
+
         // 查询评论者名称
-        String authorName = authorService.getById(commentDTO.getAuthorId()).getAuthorName();
+        AuthorDTO authorDTO = authorService.getById(commentDTO.getAuthorId());
+        String authorName = authorDTO.getAuthorName();
+        String authorAvatar = authorDTO.getAuthorAvatar();
         commentDTO.setAuthorName(authorName);
+        commentDTO.setAuthorAvatar(authorAvatar);
+        commentDTO.setChildCommentList(new ArrayList<>());
 
         if (ArticleConstant.LEVEL_2.equals(commentDTO.getCommentLevel())) {
             // 如果是二级评论则需查询被回复者名称
@@ -80,7 +91,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public PageInfo<CommentDTO> getCommentByArticleId(PageParam pageParam, Integer articleId) {
         // 查询并且判断文章是否存在
-        articleService.getById(articleId);
+        this.articleExist(articleId);
 
         QueryWrapper<Comment> wrapper = this.buildWrapper();
         wrapper.lambda()
@@ -115,7 +126,7 @@ public class CommentServiceImpl implements CommentService {
     public void save(Comment comment) {
 
         // 判断文章是否存在
-        articleService.getById(comment.getArticleId());
+        this.articleExist(comment.getArticleId());
 
         // 判断用户是否存在
         authorService.getById(comment.getAuthorId());
@@ -180,6 +191,18 @@ public class CommentServiceImpl implements CommentService {
         return praise;
     }
 
+
+    private Article articleExist(Integer articleId) {
+        Article article = articleMapper.selectOne(Wrappers.<Article>lambdaQuery()
+                .eq(Article::getArticleId, articleId));
+
+        if (article == null) {
+            log.error("【文章服务】查询文章出错，文章不存在，articleId={}", articleId);
+            throw new GlobalException(ResponseEnum.ARTICLE_NOT_EXIST);
+        }
+        return article;
+    }
+
     private QueryWrapper<Comment> buildWrapper() {
         QueryWrapper<Comment> wrapper = new QueryWrapper<>();
         wrapper.eq("delete_status", false)
@@ -189,6 +212,7 @@ public class CommentServiceImpl implements CommentService {
 
     /**
      * 一级评论回复的转换
+     *
      * @param comments
      * @return
      */
@@ -199,9 +223,28 @@ public class CommentServiceImpl implements CommentService {
                 .map(comment -> {
                     CommentDTO commentDTO = new CommentDTO();
                     BeanUtils.copyProperties(comment, commentDTO);
-                    // 查出评论的用户名称
-                    String authorName = authorService.getById(comment.getAuthorId()).getAuthorName();
+                    // 查出评论的用户名称和头像
+                    AuthorDTO authorDTO = authorService.getById(commentDTO.getAuthorId());
+                    String authorName = authorDTO.getAuthorName();
+                    String authorAvatar = authorDTO.getAuthorAvatar();
                     commentDTO.setAuthorName(authorName);
+                    commentDTO.setAuthorAvatar(authorAvatar);
+
+                    //查询自己是否点赞
+                    int result = commentMapper.selectLikeStatus(comment.getCommentId(), comment.getAuthorId());
+                    commentDTO.setHasLike(result > 0);
+
+                    // 查询一级评论默认带出的两条二级评论
+                    QueryWrapper<Comment> wrapper = new QueryWrapper<>();
+                    wrapper.lambda()
+                            .eq(Comment::getParentCommentId, comment.getCommentId())
+                            .orderByDesc(Comment::getCreateTime);
+                    // 默认显示出两条
+                    PageHelper.startPage(1, 2);
+                    List<Comment> commentList = commentMapper.selectList(wrapper);
+                    List<CommentDTO> commentDTOS = this.secondDosToDtos(commentList).getList();
+                    commentDTO.setChildCommentList(commentDTOS);
+
                     return commentDTO;
                 })
                 .collect(Collectors.toList());
@@ -216,6 +259,7 @@ public class CommentServiceImpl implements CommentService {
 
     /**
      * 二级评论回复的转换
+     *
      * @param comments
      * @return
      */
@@ -225,8 +269,6 @@ public class CommentServiceImpl implements CommentService {
                 .map(comment -> {
                     CommentDTO commentDTO = new CommentDTO();
                     BeanUtils.copyProperties(comment, commentDTO);
-                    // 查出评论的用户名称
-                    String authorName = authorService.getById(comment.getAuthorId()).getAuthorName();
                     // 如果二级评论中评论被删除了，则显示为匿名评论并且设置内容显示已删除
                     if (comment.getDeleteStatus()) {
                         commentDTO.setAuthorId(-1);
@@ -235,9 +277,19 @@ public class CommentServiceImpl implements CommentService {
                         return commentDTO;
                     }
 
+                    //查询自己是否点赞
+                    int result = commentMapper.selectLikeStatus(comment.getCommentId(), comment.getAuthorId());
+                    commentDTO.setHasLike(result > 0);
+
+                    // 查询评论者名称和头像
+                    AuthorDTO authorDTO = authorService.getById(commentDTO.getAuthorId());
+                    String authorName = authorDTO.getAuthorName();
+                    String authorAvatar = authorDTO.getAuthorAvatar();
+                    commentDTO.setAuthorName(authorName);
+                    commentDTO.setAuthorAvatar(authorAvatar);
+
                     // 查出被回复的用户名称
                     String replyAuthorName = authorService.getById(comment.getReplyCommentAuthorId()).getAuthorName();
-                    commentDTO.setAuthorName(authorName);
                     commentDTO.setReplyCommentAuthorName(replyAuthorName);
                     return commentDTO;
                 })

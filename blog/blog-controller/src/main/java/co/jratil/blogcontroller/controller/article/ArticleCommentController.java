@@ -21,6 +21,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -87,7 +88,15 @@ public class ArticleCommentController extends AbstractController<Comment> {
         checkBindindResult(result, commentDTO);
 
         Comment comment = new Comment();
-        BeanUtils.copyProperties(commentDTO, comment);
+        if(comment.getCommentLevel() == 1) {
+            comment.setArticleId(commentDTO.getArticleId());
+            comment.setCommentLevel(commentDTO.getCommentLevel());
+            comment.setContent(commentDTO.getContent());
+            comment.setCreateTime(new Date());
+        }else {
+            BeanUtils.copyProperties(commentDTO, comment);
+        }
+        comment.setAuthorId(SecurityUtils.getAuthorId());
 
         commentService.save(comment);
         return ResponseUtils.success();
