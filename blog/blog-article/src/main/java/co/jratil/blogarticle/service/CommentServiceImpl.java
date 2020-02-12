@@ -77,7 +77,6 @@ public class CommentServiceImpl implements CommentService {
         String authorAvatar = authorDTO.getAuthorAvatar();
         commentDTO.setAuthorName(authorName);
         commentDTO.setAuthorAvatar(authorAvatar);
-        commentDTO.setChildCommentList(new ArrayList<>());
 
         if (ArticleConstant.LEVEL_2.equals(commentDTO.getCommentLevel())) {
             // 如果是二级评论则需查询被回复者名称

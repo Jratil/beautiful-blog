@@ -12,6 +12,7 @@ import org.hibernate.validator.constraints.Length;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -127,7 +128,7 @@ public class CommentDTO implements Serializable {
 
     @ApiModelProperty(value = "文章显示时默认显示的两条子评论", accessMode = ApiModelProperty.AccessMode.READ_ONLY)
     @JsonProperty(access = JsonProperty.Access.READ_ONLY, defaultValue = "[]")
-    private List<CommentDTO> childCommentList;
+    private List<CommentDTO> childCommentList = new ArrayList<>();
 
     /**
      * 创建时间
