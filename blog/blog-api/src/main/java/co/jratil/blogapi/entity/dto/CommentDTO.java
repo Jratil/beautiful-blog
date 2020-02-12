@@ -130,8 +130,12 @@ public class CommentDTO implements Serializable {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Boolean topStatus;
 
+    @ApiModelProperty(value = "一级评论的子评论数量", accessMode = ApiModelProperty.AccessMode.READ_ONLY)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private Integer childCommentTotal = 0;
+
     @ApiModelProperty(value = "文章显示时默认显示的两条子评论", accessMode = ApiModelProperty.AccessMode.READ_ONLY)
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY, defaultValue = "[]")
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private List<CommentDTO> childCommentList = new ArrayList<>();
 
     /**

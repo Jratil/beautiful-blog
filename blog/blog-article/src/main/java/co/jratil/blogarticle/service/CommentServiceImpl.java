@@ -142,7 +142,7 @@ public class CommentServiceImpl implements CommentService {
             Integer parentCommentAuthorId = commentMapper.selectOne(Wrappers.<Comment>lambdaQuery()
                     .eq(Comment::getCommentId, comment.getParentCommentId())).getAuthorId();
             Integer replyAuthorId = commentMapper.selectOne(Wrappers.<Comment>lambdaQuery()
-                    .eq(Comment::getReplyCommentId, comment.getReplyCommentId())).getAuthorId();
+                    .eq(Comment::getCommentId, comment.getReplyCommentId())).getAuthorId();
             comment.setParentCommentAuthorId(parentCommentAuthorId);
             comment.setReplyCommentAuthorId(replyAuthorId);
         }
@@ -244,8 +244,12 @@ public class CommentServiceImpl implements CommentService {
                     // 默认显示出两条
                     PageHelper.startPage(1, 2);
                     List<Comment> commentList = commentMapper.selectList(wrapper);
+                    // 获取子评论数量
+                    PageInfo<Comment> childPageInfo = new PageInfo<>(commentList);
+                    int childCommentTotal = (int) childPageInfo.getTotal();
                     List<CommentDTO> commentDTOS = this.secondDosToDtos(commentList).getList();
                     commentDTO.setChildCommentList(commentDTOS);
+                    commentDTO.setChildCommentTotal(childCommentTotal);
 
                     return commentDTO;
                 })
