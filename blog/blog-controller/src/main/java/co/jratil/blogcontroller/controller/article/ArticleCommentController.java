@@ -88,7 +88,7 @@ public class ArticleCommentController extends AbstractController<Comment> {
         checkBindindResult(result, commentDTO);
 
         Comment comment = new Comment();
-        if(comment.getCommentLevel() == 1) {
+        if(commentDTO.getCommentLevel() == 1) {
             comment.setArticleId(commentDTO.getArticleId());
             comment.setCommentLevel(commentDTO.getCommentLevel());
             comment.setContent(commentDTO.getContent());

@@ -39,7 +39,8 @@ public class CommentDTO implements Serializable {
     /**
      * 评论人userId
      */
-    @ApiModelProperty(value = "评论者id")
+    @ApiModelProperty(value = "评论者id", accessMode = ApiModelProperty.AccessMode.READ_ONLY)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Integer authorId;
 
     @ApiModelProperty(value = "评论者名称", accessMode = ApiModelProperty.AccessMode.READ_ONLY)
@@ -62,7 +63,8 @@ public class CommentDTO implements Serializable {
     /**
      * 父评论的用户id
      */
-    @ApiModelProperty(value = "父评论的用户id，就是如果是回复别人的评论，则那个发表最上层评论的用户id")
+    @ApiModelProperty(value = "父评论的用户id，就是如果是回复别人的评论，则那个发表最上层评论的用户id", accessMode = ApiModelProperty.AccessMode.READ_ONLY)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Integer parentCommentAuthorId;
 
     /**
@@ -74,10 +76,12 @@ public class CommentDTO implements Serializable {
     /**
      * 被回复的评论用户id
      */
-    @ApiModelProperty(value = "回复的评论的用户id")
+    @ApiModelProperty(value = "回复的评论的用户id", accessMode = ApiModelProperty.AccessMode.READ_ONLY)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Integer replyCommentAuthorId;
 
-    @ApiModelProperty(value = "回复的评论的用户名字")
+    @ApiModelProperty(value = "回复的评论的用户名字", accessMode = ApiModelProperty.AccessMode.READ_ONLY)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private String replyCommentAuthorName;
 
     /**

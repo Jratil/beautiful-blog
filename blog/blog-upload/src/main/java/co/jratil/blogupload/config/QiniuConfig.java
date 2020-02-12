@@ -1,11 +1,9 @@
 package co.jratil.blogupload.config;
 
 import co.jratil.blogupload.service.UploadServiceImpl;
-import com.qiniu.common.Zone;
 import com.qiniu.storage.Region;
 import com.qiniu.storage.UploadManager;
 import com.qiniu.util.Auth;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
