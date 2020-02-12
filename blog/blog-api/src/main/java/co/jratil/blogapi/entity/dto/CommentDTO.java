@@ -12,7 +12,9 @@ import org.hibernate.validator.constraints.Length;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author jun
@@ -38,7 +40,6 @@ public class CommentDTO implements Serializable {
      * 评论人userId
      */
     @ApiModelProperty(value = "评论者id")
-    @NotNull(message = "评论者用户id为空")
     private Integer authorId;
 
     @ApiModelProperty(value = "评论者名称", accessMode = ApiModelProperty.AccessMode.READ_ONLY)
@@ -108,11 +109,26 @@ public class CommentDTO implements Serializable {
     private Integer praiseNum;
 
     /**
+     * 返回自己是否点赞了
+     */
+    @ApiModelProperty(value = "是否点赞了", accessMode = ApiModelProperty.AccessMode.READ_ONLY)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private Boolean hasLike;
+
+    @ApiModelProperty(value = "用户头像", accessMode = ApiModelProperty.AccessMode.READ_ONLY)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY, defaultValue = "")
+    private String authorAvatar;
+
+    /**
      * 置顶状态[ 1 置顶，0 不置顶 默认 ]
      */
     @ApiModelProperty(value = "评论的置顶状态", accessMode = ApiModelProperty.AccessMode.READ_ONLY)
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Boolean topStatus;
+
+    @ApiModelProperty(value = "文章显示时默认显示的两条子评论", accessMode = ApiModelProperty.AccessMode.READ_ONLY)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY, defaultValue = "[]")
+    private List<CommentDTO> childCommentList = new ArrayList<>();
 
     /**
      * 创建时间

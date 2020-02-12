@@ -1,16 +1,14 @@
 package co.jratil.blogarticle.service;
 
 import co.jratil.blogapi.entity.PageParam;
+import co.jratil.blogapi.entity.dto.AuthorDTO;
+import co.jratil.blogapi.service.*;
 import co.jratil.blogapi.wrapper.VisibleWrapper;
 import co.jratil.blogapi.entity.dataobject.Article;
 import co.jratil.blogapi.entity.dataobject.ArticleCategory;
 import co.jratil.blogapi.entity.dto.ArticleDTO;
 import co.jratil.blogapi.exception.GlobalException;
 import co.jratil.blogapi.enums.ResponseEnum;
-import co.jratil.blogapi.service.AbstractService;
-import co.jratil.blogapi.service.ArticleCategoryService;
-import co.jratil.blogapi.service.ArticleService;
-import co.jratil.blogapi.service.AuthorService;
 import co.jratil.blogarticle.mapper.ArticleMapper;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.dubbo.config.annotation.Service;
@@ -48,7 +46,7 @@ public class ArticleServiceImpl extends AbstractService<Article> implements Arti
 
     @Cacheable(value = "ArticleService::getById", key = "#articleId")
     @Override
-    public ArticleDTO getById(Integer articleId) {
+    public ArticleDTO getById(Integer authorId, Integer articleId) {
 
         Article article = articleMapper.selectOne(Wrappers.<Article>lambdaQuery()
                 .eq(Article::getArticleId, articleId));
@@ -58,13 +56,19 @@ public class ArticleServiceImpl extends AbstractService<Article> implements Arti
             throw new GlobalException(ResponseEnum.ARTICLE_NOT_EXIST);
         }
 
+        AuthorDTO authorDTO = authorService.getById(article.getAuthorId());
+        String authorName = authorDTO.getAuthorName();
         String categoryName = categoryService.getById(article.getCategoryId()).getCategoryName();
-        String authorName = authorService.getById(article.getAuthorId()).getAuthorName();
 
         ArticleDTO articleDTO = new ArticleDTO();
         BeanUtils.copyProperties(article, articleDTO);
         articleDTO.setCategoryName(categoryName);
         articleDTO.setAuthorName(authorName);
+        articleDTO.setAuthorAvatar(authorDTO.getAuthorAvatar());
+
+        // 查询自己是否点赞
+        int result = articleMapper.selectLikeStatus(articleId, authorId);
+        articleDTO.setHasLike(result > 0);
 
         return articleDTO;
     }
@@ -203,7 +207,7 @@ public class ArticleServiceImpl extends AbstractService<Article> implements Arti
     public void remove(Integer articleId) {
 
         // 判断该文章是否存在
-        ArticleDTO articleDTO = this.getById(articleId);
+        this.articleExist(articleId);
 
         // 存在则删除
         articleMapper.deleteById(articleId);
@@ -242,9 +246,9 @@ public class ArticleServiceImpl extends AbstractService<Article> implements Arti
     @Override
     public synchronized Integer switchLike(Integer authorId, Integer articleId) {
 
-        ArticleDTO articleDTO = this.getById(articleId);
+        Article article = this.articleExist(articleId);
         int result = articleMapper.selectLikeStatus(articleId, authorId);
-        int praise = articleDTO.getArticleLike();
+        int praise = article.getArticleLike();
 
         if (result > 0) {
             praise = praise - 1;
@@ -257,6 +261,17 @@ public class ArticleServiceImpl extends AbstractService<Article> implements Arti
         }
 
         return praise;
+    }
+
+    private Article articleExist(Integer articleId) {
+        Article article = articleMapper.selectOne(Wrappers.<Article>lambdaQuery()
+                .eq(Article::getArticleId, articleId));
+
+        if (article == null) {
+            log.error("【文章服务】查询文章出错，文章不存在，articleId={}", articleId);
+            throw new GlobalException(ResponseEnum.ARTICLE_NOT_EXIST);
+        }
+        return article;
     }
 
     private PageInfo<ArticleDTO> dosToDtos(List<Article> articleList) {
@@ -273,10 +288,11 @@ public class ArticleServiceImpl extends AbstractService<Article> implements Arti
                     BeanUtils.copyProperties(item, dto);
 
                     String categoryName = categoryService.getById(item.getCategoryId()).getCategoryName();
-                    if(StringUtils.isEmpty(authorName[0])) {
+                    if (StringUtils.isEmpty(authorName[0])) {
                         authorName[0] = authorService.getById(item.getAuthorId()).getAuthorName();
                     }
-
+                    int result = articleMapper.selectLikeStatus(item.getArticleId(), item.getAuthorId());
+                    dto.setHasLike(result > 0);
                     dto.setCategoryName(categoryName);
                     dto.setAuthorName(authorName[0]);
                     return dto;

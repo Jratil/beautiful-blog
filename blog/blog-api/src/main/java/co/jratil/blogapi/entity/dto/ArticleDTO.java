@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.sun.org.apache.regexp.internal.RE;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -73,6 +74,7 @@ public class ArticleDTO implements Serializable {
     /**
      * 类目的名称
      */
+    @ApiModelProperty(value = "类目名称")
     private String categoryName;
 
     /**
@@ -87,13 +89,27 @@ public class ArticleDTO implements Serializable {
      * 文章的点赞（喜欢）数
      * 默认：0
      */
+    @ApiModelProperty(value = "点赞数", accessMode = ApiModelProperty.AccessMode.READ_ONLY)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Integer articleLike;
+
+    /**
+     * 返回自己是否点赞了
+     */
+    @ApiModelProperty(value = "是否点赞了", accessMode = ApiModelProperty.AccessMode.READ_ONLY)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private Boolean hasLike;
+
+    @ApiModelProperty(value = "用户头像", accessMode = ApiModelProperty.AccessMode.READ_ONLY)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY, defaultValue = "")
+    private String authorAvatar;
 
     /**
      * 文章创建时间
      * 默认：当前时间
      */
     @JsonSerialize(using = Date2LongSerializer.class)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Date createTime;
 
     /**
@@ -101,5 +117,6 @@ public class ArticleDTO implements Serializable {
      * 默认：数据库更新时间
      */
     @JsonSerialize(using = Date2LongSerializer.class)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Date lastUpdate;
 }

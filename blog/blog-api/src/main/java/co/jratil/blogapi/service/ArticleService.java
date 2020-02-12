@@ -9,7 +9,7 @@ import java.util.Map;
 
 public interface ArticleService {
 
-    ArticleDTO getById(Integer articleId);
+    ArticleDTO getById(Integer authorId, Integer articleId);
 
     PageInfo<ArticleDTO> listByAuthorId(PageParam pageParam, Integer authorId, boolean visible);
 

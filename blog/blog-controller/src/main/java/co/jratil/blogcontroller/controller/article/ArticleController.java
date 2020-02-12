@@ -47,11 +47,11 @@ public class ArticleController extends AbstractController<Article> {
 
     @GetMapping("/main_page")
     public ResponseVO mainPage(HttpServletRequest request, HttpServletResponse response) {
-        HttpSession session = SessionUtil.getHttpSession();
-        Integer authorId = (Integer) session.getAttribute("authorId");
+//        HttpSession session = SessionUtil.getHttpSession();
+//        Integer authorId = (Integer) session.getAttribute("authorId");
 
         PageParam pageParam = new PageParam(getPage(), getPage());
-        PageInfo<ArticleDTO> date = articleService.listByAuthorId(pageParam, authorId, true);
+        PageInfo<ArticleDTO> date = articleService.listByAuthorId(pageParam, SecurityUtils.getAuthorId(), true);
 
         return ResponseUtils.success(date);
     }
@@ -64,7 +64,7 @@ public class ArticleController extends AbstractController<Article> {
     public ResponseVO queryArticle(@PathVariable("articleId") Integer articleId) {
         this.checkParam(articleId, "articleId", this.getClass());
 
-        ArticleDTO articleDTO = articleService.getById(articleId);
+        ArticleDTO articleDTO = articleService.getById(SecurityUtils.getAuthorId(), articleId);
         this.checkMeAndVisible(articleDTO.getAuthorId(), articleDTO.getArticleVisible(), ResponseEnum.ARTICLE_NOT_EXIST);
 
         return ResponseUtils.success(articleDTO);
@@ -152,7 +152,7 @@ public class ArticleController extends AbstractController<Article> {
             throw new GlobalException(ResponseEnum.PARAM_ERROR.getCode(), result.getFieldError().getDefaultMessage());
         }
 
-        ArticleDTO dto = articleService.getById(articleDTO.getArticleId());
+        ArticleDTO dto = articleService.getById(SecurityUtils.getAuthorId(), articleDTO.getArticleId());
         if (!this.checkMe(dto.getAuthorId())) {
             log.error("【文章操作】修改文章，没有权限，articleDTO={}", articleDTO);
             throw new GlobalException(ResponseEnum.NOT_AUTHORITY);
@@ -172,7 +172,7 @@ public class ArticleController extends AbstractController<Article> {
 
         this.checkParam(articleId, "articleId", this.getClass());
 
-        ArticleDTO articleDTO = articleService.getById(articleId);
+        ArticleDTO articleDTO = articleService.getById(SecurityUtils.getAuthorId(), articleId);
         if (!this.checkMe(articleDTO.getAuthorId())) {
             log.error("【文章操作】删除文章，没有权限，articleDTO={}", articleDTO);
             throw new GlobalException(ResponseEnum.NOT_AUTHORITY);
