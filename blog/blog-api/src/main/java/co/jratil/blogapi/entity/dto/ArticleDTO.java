@@ -1,11 +1,8 @@
 package co.jratil.blogapi.entity.dto;
 
 import co.jratil.blogapi.utils.serializer.Date2LongSerializer;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.sun.org.apache.regexp.internal.RE;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;

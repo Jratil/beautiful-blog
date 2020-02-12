@@ -127,21 +127,24 @@ public class CommentServiceImpl implements CommentService {
         // 判断文章是否存在
         this.articleExist(comment.getArticleId());
 
-        // 判断用户是否存在
-        authorService.getById(comment.getAuthorId());
 
         // 如果是二级评论，则要判断父评论、回复人、回复的评论id 是否存在
         if (comment.getCommentLevel() == 2) {
             // 判断父评论是否存在
-            if (commentMapper.selectById(comment.getParentCommentId()) == null) {
+            if (comment.getParentCommentId() == null || commentMapper.selectById(comment.getParentCommentId()) == null) {
                 throw new GlobalException(ResponseEnum.COMMENT_NOT_EXIST);
             }
-            // 判断回复人是否存在
-            authorService.getById(comment.getReplyCommentAuthorId());
             // 判断回复的评论是否存在
-            if (commentMapper.selectById(comment.getReplyCommentId()) == null) {
+            if (comment.getReplyCommentId() == null || commentMapper.selectById(comment.getReplyCommentId()) == null) {
                 throw new GlobalException(ResponseEnum.COMMENT_NOT_EXIST);
             }
+            // 查出父评论和回复的评论的用户id
+            Integer parentCommentAuthorId = commentMapper.selectOne(Wrappers.<Comment>lambdaQuery()
+                    .eq(Comment::getCommentId, comment.getParentCommentId())).getAuthorId();
+            Integer replyAuthorId = commentMapper.selectOne(Wrappers.<Comment>lambdaQuery()
+                    .eq(Comment::getCommentId, comment.getReplyCommentId())).getAuthorId();
+            comment.setParentCommentAuthorId(parentCommentAuthorId);
+            comment.setReplyCommentAuthorId(replyAuthorId);
         }
         commentMapper.insert(comment);
     }
@@ -241,8 +244,12 @@ public class CommentServiceImpl implements CommentService {
                     // 默认显示出两条
                     PageHelper.startPage(1, 2);
                     List<Comment> commentList = commentMapper.selectList(wrapper);
+                    // 获取子评论数量
+                    PageInfo<Comment> childPageInfo = new PageInfo<>(commentList);
+                    int childCommentTotal = (int) childPageInfo.getTotal();
                     List<CommentDTO> commentDTOS = this.secondDosToDtos(commentList).getList();
                     commentDTO.setChildCommentList(commentDTOS);
+                    commentDTO.setChildCommentTotal(childCommentTotal);
 
                     return commentDTO;
                 })
