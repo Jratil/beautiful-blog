@@ -32,23 +32,29 @@ const Home: React.FC<IProps> = ({ articles, authorId, loading }) => {
     const dispatch = useDispatch()
     const [params, setParams] = useState<IParams>(initParams)
     const [categoryId, setCategoryId] = useState<number>(0)
+    const [archive, setArchive] = useState<string>('')
     const { list = [], total = 0 } = articles
     useEffect(() => {
         if (authorId !== 0) {
-            getCategories()
+            dispatch({ type: 'category/get', payload: { authorId } })
+            dispatch({ type: 'archive/get', payload: { authorId } })
             getArticles()
         }
     }, [authorId])
 
     useEffect(() => {
+        if (authorId === 0) return
         if (categoryId) {
             getArticlesByCategory()
+        } else if (archive) {
+            getArticlesByArchive()
         } else {
             getArticles()
         }
     }, [params])
 
     useEffect(() => {
+        if (authorId === 0) return
         if (categoryId) {
             getArticlesByCategory({ page: 1, count: 10 })
         } else {
@@ -56,6 +62,16 @@ const Home: React.FC<IProps> = ({ articles, authorId, loading }) => {
         }
         setParams({ page: 1, count: 10 })
     }, [categoryId])
+
+    useEffect(() => {
+        if (authorId === 0) return
+        if (archive) {
+            getArticlesByArchive({ page: 1, count: 10 })
+        } else {
+            getArticles({ page: 1, count: 10 })
+        }
+        setParams({ page: 1, count: 10 })
+    }, [archive])
 
     const handleChange = (page: number, count?: number) => {
         setParams({ page, count })
@@ -73,8 +89,8 @@ const Home: React.FC<IProps> = ({ articles, authorId, loading }) => {
         dispatch({ type: 'home/getArticlesByCategory', payload: { ...newParams, categoryId } })
     }
 
-    const getCategories = () => {
-        dispatch({ type: 'category/get', payload: { authorId } })
+    const getArticlesByArchive = (newParams: IParams = params) => {
+        dispatch({ type: 'home/getArticlesByArchive', payload: { ...newParams, authorId, month: archive } })
     }
 
     return (
@@ -86,7 +102,12 @@ const Home: React.FC<IProps> = ({ articles, authorId, loading }) => {
                 <XPagination onChange={handleChange} total={total} {...params} onShowSizeChange={handleSizeChange} />
             </div>
             <div className={styles.side_wrapper}>
-                <Sider categoryId={categoryId} changeCategoryId={setCategoryId} />
+                <Sider
+                    categoryId={categoryId}
+                    currentArchive={archive}
+                    changeCategoryId={setCategoryId}
+                    changeArchive={setArchive}
+                />
             </div>
         </div>
     )

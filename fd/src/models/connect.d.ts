@@ -1,5 +1,6 @@
 import { IAppState } from '@/models/app.ts'
 import { ICategoryState } from '@/models/category'
+import { IArchiveState } from '@/models/archive'
 import { IArticleState } from '@/pages/article/model'
 import { IHomeState } from '@/pages/index/model.ts'
 import { IWriteState } from '@/pages/write/model.ts'
@@ -17,6 +18,7 @@ export interface connectState {
     loading: Loading
     app: IAppState
     article: IArticleState
+    archive: IArchiveState
     home: IHomeState
     category: ICategoryState
     write: IWriteState

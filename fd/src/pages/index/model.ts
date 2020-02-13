@@ -2,7 +2,7 @@ import api from '@/services'
 import { Effect } from 'dva'
 import { Reducer } from 'redux'
 
-const { articleGet, articleGetByCategory } = api
+const { articleGet, articleGetByCategory, articleGetByArchive } = api
 
 export interface IArticle {
     articleId: number
@@ -26,6 +26,7 @@ interface IModel {
     effects: {
         getArticles: Effect
         getArticlesByCategory: Effect
+        getArticlesByArchive: Effect
     }
     reducers: {
         updateState: Reducer<IHomeState>
@@ -44,6 +45,10 @@ const Main: IModel = {
         },
         *getArticlesByCategory({ payload }, { call, put }) {
             const articles = yield call(articleGetByCategory, payload)
+            yield put({ type: 'updateState', payload: { articles } })
+        },
+        *getArticlesByArchive({ payload }, { call, put }) {
+            const articles = yield call(articleGetByArchive, payload)
             yield put({ type: 'updateState', payload: { articles } })
         }
     },

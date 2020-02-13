@@ -13,12 +13,16 @@ export default {
     emailSend: 'POST /email/send_code',
     articleGet: 'GET /article/page/:authorId',
     articleGetByCategory: 'GET /article/page/category/:categoryId',
+    articleGetByArchive: 'GET /article/page/archive/:authorId/:month',
 
     // category
     categoryAdd: 'POST /category/add',
     categoryDelete: 'DELETE /category/delete/:categoryId',
     categoryGet: 'GET /category/page/:authorId',
     categoryUpdate: 'PUT /category/update',
+
+    // archive
+    archiveGet: 'GET /article/archives/:authorId',
 
     // article
     articleAdd: 'POST /article/add',
