@@ -26,5 +26,12 @@ export default {
     articleLike: 'POST /article/like/:articleId',
     articleDislike: 'DELETE /article/like/:articleId',
     articleEdit: 'PUT /article/update/:articleId',
-    articleGetById: 'GET /article/query/:articleId'
+    articleGetById: 'GET /article/:articleId',
+
+    //  comment
+    commentAdd: 'POST /comment',
+    commentQueryByArticleId: 'GET /comment/page/article/:articleId',
+    commentQueryLikedByArticleId: 'GET /comment/like/:articleId',
+    commentToggleLiked: 'put /comment/like/:commentId',
+    commentQueryChild: 'GET /comment/page/comment/:commentId'
 }
