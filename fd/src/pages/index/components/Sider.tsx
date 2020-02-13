@@ -1,22 +1,23 @@
-import React, { useState, useEffect } from 'react'
-import { Avatar, Divider, Button, Input } from 'antd'
-import { connect, useDispatch } from 'dva'
+import React from 'react'
+import { Divider, Button, Input } from 'antd'
+import { connect } from 'dva'
 import styles from '../index.less'
 import { ICategory } from '@/models/category'
-import { connectState, connectProps } from '@/models/connect'
+import { connectState } from '@/models/connect'
 
-interface IProps extends connectProps {
+interface IProps {
     categories: ICategory[]
+    loading: boolean
+    categoryId: number
+    changeCategoryId(id: number): void
 }
 
 const { Search } = Input
-const Sider: React.FC<IProps> = ({ categories }) => {
-    const dispatch = useDispatch()
-    const [selectId, setSelectId] = useState<number>(0)
-    const handleCategory = (categoryId: number) => {
-        setSelectId(categoryId)
-        dispatch({ type: 'home/getArticlesByCategory', payload: { categoryId } })
+const Sider: React.FC<IProps> = ({ categories, categoryId, loading, changeCategoryId, GetArticleRef }) => {
+    const handleCategory = (id: number) => {
+        changeCategoryId(id === categoryId ? 0 : id)
     }
+
     return (
         <div className={styles.sider_wrapper}>
             <Search onSearch={(value) => console.log(value)} />
@@ -28,7 +29,7 @@ const Sider: React.FC<IProps> = ({ categories }) => {
                         key={r.categoryId}
                         className={styles.tag}
                         onClick={() => handleCategory(r.categoryId)}
-                        type={r.categoryId === selectId ? 'primary' : 'default'}
+                        type={r.categoryId === categoryId ? 'primary' : 'default'}
                     >
                         {r.categoryName}
                     </Button>
@@ -38,6 +39,7 @@ const Sider: React.FC<IProps> = ({ categories }) => {
     )
 }
 
-export default connect(({ category }: connectState) => ({
-    categories: category.categories
+export default connect(({ category, loading }: connectState) => ({
+    categories: category.categories,
+    loading: loading.effects['home/getArticlesByCategory']
 }))(Sider)
