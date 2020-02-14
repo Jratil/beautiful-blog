@@ -6,11 +6,13 @@ interface IProps {
     name: string
 }
 
-const XPagination: React.FC<IProps> = ({ avatarSrc, name }) => {
+const XPagination: React.FC<IProps> = ({ avatarSrc, name, ...restProps }) => {
     return avatarSrc ? (
-        <Avatar src={avatarSrc} style={{ cursor: 'pointer' }} />
+        <Avatar src={avatarSrc} style={{ cursor: 'pointer' }} {...restProps} />
     ) : (
-        <Avatar style={{ cursor: 'pointer' }}>{name.slice(0, 1)}</Avatar>
+        <Avatar style={{ cursor: 'pointer' }} {...restProps}>
+            {name.slice(0, 1)}
+        </Avatar>
     )
 }
 

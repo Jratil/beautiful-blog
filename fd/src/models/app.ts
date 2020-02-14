@@ -36,12 +36,12 @@ const AppModal: IAppModal = {
     namespace: 'app',
     state: {
         userInfo: {
-            authorAccount: '123123@qq.com',
+            authorAccount: '',
             authorAvatar: '',
-            authorBirthday: 1575988696,
+            authorBirthday: 0,
             authorGender: 0,
             authorId: 0,
-            authorName: 'Micah',
+            authorName: '',
             authorPassword: ''
         }
     },

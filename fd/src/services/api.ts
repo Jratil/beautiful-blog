@@ -4,7 +4,7 @@ export default {
     authLogout: 'DELETE /auth/logout',
     authDelete: 'DELETE /auth/delete',
     authRegistry: 'POST /auth/register',
-    authUpdate: 'PUT /auth/update',
+    authUpdate: 'PUT /auth',
     authUpdatePassword: 'PUT /auth/update/password',
     authQueryByAccount: 'GET /auth/account/:account',
     authQueryById: 'GET /auth/query/account/:id',
