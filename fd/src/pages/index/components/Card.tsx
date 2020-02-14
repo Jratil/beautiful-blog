@@ -10,7 +10,7 @@ interface IProps {
 }
 
 const Card: React.FC<IProps> = ({ data }) => {
-    const { articleTitle, articleSubtitle, articleId, authorName, articleLike, lastUpdate } = data
+    const { articleTitle, articleSubtitle, articleId, authorName, articleLike, lastUpdate, hasLike } = data
     return (
         <Link to={`/article/${articleId}`} className={styles.article_wrapper}>
             <div className={styles.card_title}>{articleTitle}</div>
@@ -21,7 +21,7 @@ const Card: React.FC<IProps> = ({ data }) => {
                     {authorName}
                 </span>
                 <span className={styles.fl}>
-                    <Icon type="like" className={styles.card_icon} />
+                    <Icon type="like" className={styles.card_icon} theme={hasLike ? 'filled' : 'outlined'} />
                     {articleLike}
                 </span>
                 <span className={styles.fr}>

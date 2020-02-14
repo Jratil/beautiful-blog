@@ -12,6 +12,7 @@ import styles from './index.less'
 import { ICategory } from '../category/model'
 import CollectSVG from 'icons/collection.svg'
 import CommentReply from './components/CommentReply'
+import classnames from 'classnames'
 
 interface IProps extends connectProps {
     detail: IArticle
@@ -34,6 +35,10 @@ const Page: React.FC<IProps> = ({ detail, categories, comments, likedComments })
 
     const categoryName = useMemo(() => categories.find((r) => r.id === categoryId)?.name, [categories, categoryId])
 
+    const handleLike = () => {
+        dispatch({ type: 'article/like', payload: { articleId } })
+    }
+
     return (
         <div className={styles.view}>
             <div className={styles.article_area}>
@@ -55,7 +60,7 @@ const Page: React.FC<IProps> = ({ detail, categories, comments, likedComments })
                 </div>
             </div>
             <div className={styles.article_suspended_panel}>
-                <div>
+                <div onClick={handleLike}>
                     <Badge
                         style={{
                             backgroundColor: hasLike ? '#20a0ff' : '#ffffff',
@@ -64,7 +69,11 @@ const Page: React.FC<IProps> = ({ detail, categories, comments, likedComments })
                         count={articleLike}
                         overflowCount={999}
                     >
-                        <Icon className={styles.panel_btn} type="like" />
+                        <Icon
+                            className={classnames(styles.panel_btn, hasLike ? styles.like_active : '')}
+                            type="like"
+                            theme={hasLike ? 'filled' : 'outlined'}
+                        />
                     </Badge>
                 </div>
                 <Icon component={CollectSVG} className={styles.panel_btn} />

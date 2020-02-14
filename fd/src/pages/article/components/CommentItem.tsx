@@ -33,7 +33,7 @@ const CommentItem: React.FC<IProps> = ({ data, isSub, parentCommentId }) => {
     const handleReply = () => setIsReply(!isReplay)
     const handleLike = () =>
         dispatch({
-            type: 'article/like',
+            type: 'article/commentLike',
             payload: { commentId },
             callback: () => {
                 dispatch({ type: 'article/getComments', payload: { articleId } })

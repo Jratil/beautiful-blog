@@ -14,6 +14,7 @@ export interface IArticle {
     author_id: number
     authorName: string
     lastUpdate: string
+    hasLike: boolean
 }
 
 export interface IHomeState {

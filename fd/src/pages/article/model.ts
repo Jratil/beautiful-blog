@@ -2,7 +2,14 @@ import api from '@/services'
 import { Effect } from 'dva'
 import { Reducer } from 'redux'
 
-const { articleGetById, commentAdd, commentQueryByArticleId, commentToggleLiked, commentQueryChild } = api
+const {
+    articleGetById,
+    articleToggleLike,
+    commentAdd,
+    commentQueryByArticleId,
+    commentToggleLiked,
+    commentQueryChild
+} = api
 
 export interface IArticle {
     articleContent: string
@@ -12,7 +19,7 @@ export interface IArticle {
     articleLike: number
     categoryId: number
     visible: boolean
-    hasLike: boolean //TODO 字段待添加
+    hasLike: boolean
 }
 
 export interface IComment {
@@ -51,11 +58,13 @@ interface IModel {
         addComment: Effect
         getComments: Effect
         like: Effect
+        commentLike: Effect
         getChildComments: Effect
     }
     reducers: {
         updateState: Reducer<IArticleState>
         updateChildComment: Reducer
+        updateLike: Reducer
         updateCommentLike: Reducer
     }
 }
@@ -90,6 +99,10 @@ const article: IModel = {
             yield put({ type: 'updateState', payload: { comments: res.list } })
         },
         *like({ payload, callback }, { call, put }) {
+            const res = yield call(articleToggleLike, payload)
+            yield put({ type: 'updateLike', payload: { count: typeof res === 'boolean' ? 0 : res } })
+        },
+        *commentLike({ payload, callback }, { call, put }) {
             const res = yield call(commentToggleLiked, payload)
             yield put({ type: 'updateCommentLike', payload: { ...payload, count: typeof res === 'boolean' ? 0 : res } })
         },
@@ -115,6 +128,19 @@ const article: IModel = {
             return {
                 ...state,
                 comments: [...comments]
+            }
+        },
+        updateLike(state, { payload }) {
+            const { count } = payload
+            const { detail } = state
+            const { hasLike } = detail
+            return {
+                ...state,
+                detail: {
+                    ...detail,
+                    hasLike: !hasLike,
+                    articleLike: count
+                }
             }
         },
         updateCommentLike(state, { payload }) {
