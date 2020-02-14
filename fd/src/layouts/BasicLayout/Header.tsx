@@ -1,5 +1,5 @@
 import React, { memo, useContext } from 'react'
-import { Link } from 'umi'
+import { Link, router } from 'umi'
 import { connect, useDispatch } from 'dva'
 import { useFullscreen } from '@umijs/hooks'
 import { Icon, Layout, Menu, Avatar, Dropdown } from 'antd'
@@ -24,6 +24,10 @@ const CustomHeader: React.FC<IProps> = ({ avatarSrc, authorName, ...restProps })
 
     const handleLogout = () => dispatch({ type: 'app/logout' })
 
+    const handleLogoClick = () => {
+        router.push('/')
+    }
+
     const dropdownMenu = (
         <Menu>
             <MenuItem key="user">
@@ -37,7 +41,9 @@ const CustomHeader: React.FC<IProps> = ({ avatarSrc, authorName, ...restProps })
     )
     return (
         <Header {...restProps}>
-            <div className={styles.logo}>Ratil Blog</div>
+            <div className={styles.logo} onClick={handleLogoClick}>
+                Ratil Blog
+            </div>
             <Dropdown overlay={dropdownMenu} placement="bottomRight">
                 <div className={styles.avatar}>
                     <XAvatar avatarSrc={avatarSrc} name={authorName} />
