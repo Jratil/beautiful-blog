@@ -2,7 +2,7 @@ import api from '@/services'
 import { Effect } from 'dva'
 import { Reducer } from 'redux'
 
-const { categoryGet } = api
+const { categoryGet, categoryAdd } = api
 
 export interface ICategory {
     categoryId: number
@@ -21,6 +21,7 @@ interface IModel {
     state: ICategoryState
     effects: {
         get: Effect
+        add: Effect
     }
     reducers: {
         updateState: Reducer<ICategoryState>
@@ -36,6 +37,10 @@ const Category: IModel = {
         *get({ payload }, { call, put }) {
             const categories = yield call(categoryGet, payload)
             yield put({ type: 'updateState', payload: { categories: categories.list } })
+        },
+        *add({ payload, callback }, { call }) {
+            const res = yield call(categoryAdd, payload)
+            if (res && callback) callback()
         }
     },
     reducers: {

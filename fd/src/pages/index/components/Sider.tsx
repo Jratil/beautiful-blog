@@ -1,6 +1,6 @@
 import React from 'react'
-import { Divider, Button, Input } from 'antd'
-import { connect } from 'dva'
+import { Divider, Button, Input, Modal, message } from 'antd'
+import { connect, useDispatch } from 'dva'
 import styles from '../index.less'
 import { ICategory } from '@/models/category'
 import { IArchive } from '@/models/archive'
@@ -8,6 +8,7 @@ import { connectState } from '@/models/connect'
 import classnames from 'classnames'
 
 interface IProps {
+    authorId: number
     categories: ICategory[]
     archives: IArchive[]
     loading: boolean
@@ -19,6 +20,7 @@ interface IProps {
 
 const { Search } = Input
 const Sider: React.FC<IProps> = ({
+    authorId,
     categories,
     categoryId,
     loading,
@@ -27,6 +29,8 @@ const Sider: React.FC<IProps> = ({
     currentArchive,
     changeArchive
 }) => {
+    const dispatch = useDispatch()
+
     const handleCategory = (id: number) => {
         changeCategoryId(id === categoryId ? 0 : id)
     }
@@ -34,6 +38,25 @@ const Sider: React.FC<IProps> = ({
     const handleArchive = (current: string) => {
         changeArchive(current === currentArchive ? '' : current)
     }
+
+    const handleAddCategory = () => {
+        let newCategory = ''
+        Modal.confirm({
+            title: '添加类目',
+            content: <Input onChange={(e) => (newCategory = e.target.value)} allowClear />,
+            onOk: () => {
+                dispatch({
+                    type: 'category/add',
+                    payload: { categoryName: newCategory },
+                    callback: () => {
+                        message.success('添加类目成功')
+                        dispatch({ type: 'category/get', payload: { authorId } })
+                    }
+                })
+            }
+        })
+    }
+
     return (
         <div className={styles.sider_wrapper}>
             <Search onSearch={(value) => console.log(value)} />
@@ -50,6 +73,10 @@ const Sider: React.FC<IProps> = ({
                         {r.categoryName}
                     </Button>
                 ))}
+
+                <Button shape="round" key="$new" className={styles.tag} onClick={handleAddCategory} type="dashed">
+                    添加类目 +
+                </Button>
             </div>
             <Divider>归档</Divider>
             <div className={classnames(styles.tag_wrapper, styles.archive_tag_wrapper)}>
@@ -69,7 +96,8 @@ const Sider: React.FC<IProps> = ({
     )
 }
 
-export default connect(({ category, loading, archive }: connectState) => ({
+export default connect(({ app, category, loading, archive }: connectState) => ({
+    authorId: app.userInfo.authorId,
     categories: category.categories,
     archives: archive.archives,
     loading: loading.effects['home/getArticlesByCategory']

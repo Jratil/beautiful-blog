@@ -16,7 +16,7 @@ export default {
     articleGetByArchive: 'GET /article/page/archive/:authorId/:month',
 
     // category
-    categoryAdd: 'POST /category/add',
+    categoryAdd: 'POST /category',
     categoryDelete: 'DELETE /category/delete/:categoryId',
     categoryGet: 'GET /category/page/:authorId',
     categoryUpdate: 'PUT /category/update',
