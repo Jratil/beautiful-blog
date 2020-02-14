@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
 import { connect, useDispatch } from 'dva'
 import { Spin, Empty } from 'antd'
 import Sider from './components/Sider'
@@ -7,7 +7,6 @@ import styles from './index.less'
 import { connectState, connectProps } from '@/models/connect'
 import { IArticle } from './model'
 import Card from './components/Card'
-// import ArticleList from './components/ArticleList'
 
 interface IProps extends connectProps {
     authorId: number
@@ -93,6 +92,16 @@ const Home: React.FC<IProps> = ({ articles, authorId, loading }) => {
         dispatch({ type: 'home/getArticlesByArchive', payload: { ...newParams, authorId, month: archive } })
     }
 
+    const changeCategoryId = (id: number) => {
+        setCategoryId(id)
+        setArchive('')
+    }
+
+    const changeArchive = (archive: string) => {
+        setArchive(archive)
+        setCategoryId(0)
+    }
+
     return (
         <div className={styles.wrapper}>
             <div className={styles.articles_wrapper}>
@@ -105,8 +114,8 @@ const Home: React.FC<IProps> = ({ articles, authorId, loading }) => {
                 <Sider
                     categoryId={categoryId}
                     currentArchive={archive}
-                    changeCategoryId={setCategoryId}
-                    changeArchive={setArchive}
+                    changeCategoryId={changeCategoryId}
+                    changeArchive={changeArchive}
                 />
             </div>
         </div>
