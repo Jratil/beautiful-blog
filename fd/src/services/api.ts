@@ -10,7 +10,7 @@ export default {
     authQueryById: 'GET /auth/query/account/:id',
 
     // email
-    emailSend: 'POST /email/send_code',
+    emailSend: 'POST /email/send_code', //  即将废弃
     articleGet: 'GET /article/page/:authorId',
     articleGetByCategory: 'GET /article/page/category/:categoryId',
     articleGetByArchive: 'GET /article/page/archive/:authorId/:month',
@@ -36,5 +36,8 @@ export default {
     commentQueryByArticleId: 'GET /comment/page/article/:articleId',
     commentQueryLikedByArticleId: 'GET /comment/like/:articleId',
     commentToggleLiked: 'put /comment/like/:commentId',
-    commentQueryChild: 'GET /comment/page/comment/:commentId'
+    commentQueryChild: 'GET /comment/page/comment/:commentId',
+
+    //  sms
+    smsSend: 'POST /sms/send/:account/:type'
 }

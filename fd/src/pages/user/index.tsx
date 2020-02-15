@@ -24,7 +24,8 @@ const props: UploadProps = {
     name: 'avatar',
     action: '/api/upload/pic',
     headers: {
-        Authorization: cookies.get(AUTHORIZATION_KEY) as string
+        Authorization: cookies.get(AUTHORIZATION_KEY) as string,
+        'Content-Type': 'application/form-data'
     },
     beforeUpload(file) {
         if (file.size > 2 * 1024 * 1024) {
@@ -48,7 +49,7 @@ const props: UploadProps = {
 
 const User: React.FC<IProps> = ({ form, userInfo }) => {
     const dispatch = useDispatch()
-    const [type, setType] = useState<IType>('edit')
+    const [type, setType] = useState<IType>('view')
     const { getFieldDecorator } = form
     const { authorAccount, authorName, authorBirthday, authorGender, authorAvatar, authorId } = userInfo
 

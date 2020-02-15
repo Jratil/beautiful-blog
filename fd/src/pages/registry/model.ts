@@ -10,16 +10,16 @@ interface IModel extends Model {
     }
 }
 
-const { authRegistry, emailSend } = api
+const { authRegistry, smsSend } = api
 const LoginModel: IModel = {
     namespace: 'registry',
     state: {},
     effects: {
-        *getVerifyCode({ payload, callback }, { call, put }) {
-            const res = yield call(emailSend, payload)
+        *getVerifyCode({ payload, callback }, { call }) {
+            const res = yield call(smsSend, { ...payload, type: 0 })
             if (res && callback) callback()
         },
-        *registry({ payload, callback }, { call, put }) {
+        *registry({ payload, callback }, { call }) {
             const res = yield call(authRegistry, payload)
             if (res && callback) callback()
         }
