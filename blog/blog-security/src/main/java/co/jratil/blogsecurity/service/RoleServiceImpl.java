@@ -29,7 +29,6 @@ public class RoleServiceImpl implements RoleService {
     @Autowired
     private RoleMapper roleMapper;
 
-    @Cacheable(value = "role", key = "#authorId")
     @Transactional
     @Override
     public List<String> getRole(Integer authorId) {
@@ -54,7 +53,6 @@ public class RoleServiceImpl implements RoleService {
         return author;
     }
 
-    @CacheEvict(value = "getRole", key = "#authorRole.getAuthorId()")
     @Transactional
     @Override
     public void deleteRole(AuthorRole authorRole) {
@@ -64,7 +62,6 @@ public class RoleServiceImpl implements RoleService {
                 .eq(AuthorRole::getRole, authorRole.getRole()));
     }
 
-    @CacheEvict(value = "getRole", key = "#authorRole.getAuthorId()")
     @Transactional
     @Override
     public void updateRole(AuthorRole authorRole) {
@@ -72,7 +69,6 @@ public class RoleServiceImpl implements RoleService {
         roleMapper.updateById(authorRole);
     }
 
-    @CacheEvict(value = "getRole", key = "#authorRole.getAuthorId()")
     @Transactional
     @Override
     public void addRole(AuthorRole authorRole) {

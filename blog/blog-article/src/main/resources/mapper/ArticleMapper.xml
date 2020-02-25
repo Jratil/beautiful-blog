@@ -41,18 +41,4 @@ article_subtitle,
     <sql id="Blob_Column_List">
         article_content
     </sql>
-
-    <select id="selectLike" parameterType="java.lang.Integer" resultType="java.lang.Integer">
-
-        select article_like
-        from t_article
-        where article_id = #{articleId}
-
-    </select>
-
-    <update id="updateArticleLike" parameterType="Integer">
-        update t_article
-        set article_like = #{articleLike,jdbcType=INTEGER}
-        where article_id = #{articleId,jdbcType=INTEGER}
-    </update>
 </mapper>

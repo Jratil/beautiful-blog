@@ -11,7 +11,7 @@ public class JwtConstant {
      * token 相关内容
      */
     public static final String TOKEN_HEADER = "Authorization";
-    public static final String TOKEN_PREFIX = "Bearer ";
+    public static final String TOKEN_PREFIX = "Bearer_";
 
     public static final String TOKEN_TYPE = "JWT";
 

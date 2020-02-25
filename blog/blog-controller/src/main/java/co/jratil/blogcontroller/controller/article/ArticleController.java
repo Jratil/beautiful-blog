@@ -47,11 +47,11 @@ public class ArticleController extends AbstractController<Article> {
 
     @GetMapping("/main_page")
     public ResponseVO mainPage(HttpServletRequest request, HttpServletResponse response) {
-        HttpSession session = SessionUtil.getHttpSession();
-        Integer authorId = (Integer) session.getAttribute("authorId");
+//        HttpSession session = SessionUtil.getHttpSession();
+//        Integer authorId = (Integer) session.getAttribute("authorId");
 
         PageParam pageParam = new PageParam(getPage(), getPage());
-        PageInfo<ArticleDTO> date = articleService.listByAuthorId(pageParam, authorId, true);
+        PageInfo<ArticleDTO> date = articleService.listByAuthorId(pageParam, SecurityUtils.getAuthorId(), true);
 
         return ResponseUtils.success(date);
     }
@@ -60,11 +60,11 @@ public class ArticleController extends AbstractController<Article> {
     @ApiImplicitParams({
             @ApiImplicitParam(value = "文章id", name = "articleId", paramType = "path")
     })
-    @GetMapping("/query/{articleId}")
+    @GetMapping("/{articleId}")
     public ResponseVO queryArticle(@PathVariable("articleId") Integer articleId) {
         this.checkParam(articleId, "articleId", this.getClass());
 
-        ArticleDTO articleDTO = articleService.getById(articleId);
+        ArticleDTO articleDTO = articleService.getById(SecurityUtils.getAuthorId(), articleId);
         this.checkMeAndVisible(articleDTO.getAuthorId(), articleDTO.getArticleVisible(), ResponseEnum.ARTICLE_NOT_EXIST);
 
         return ResponseUtils.success(articleDTO);
@@ -74,7 +74,7 @@ public class ArticleController extends AbstractController<Article> {
     @ApiImplicitParams({
             @ApiImplicitParam(value = "类目id", name = "categoryId", paramType = "path")
     })
-    @PostMapping("/page/category/{categoryId}")
+    @GetMapping("/page/category/{categoryId}")
     public ResponseVO pageQueryByCategoryId(@PathVariable("categoryId") Integer categoryId) {
         this.checkParam(categoryId, "categoryId", this.getClass());
 
@@ -90,7 +90,7 @@ public class ArticleController extends AbstractController<Article> {
     @ApiImplicitParams({
             @ApiImplicitParam(value = "用户id", name = "authorId", paramType = "path")
     })
-    @PostMapping("/page/{authorId}")
+    @GetMapping("/page/{authorId}")
     public ResponseVO pageQueryByAuthorId(@PathVariable("authorId") Integer authorId) {
         this.checkParam(authorId, "authorId", this.getClass());
 
@@ -101,7 +101,7 @@ public class ArticleController extends AbstractController<Article> {
     }
 
     @ApiOperation(value = "查找归档的月份", notes = "根据用户id分页查找所有的归档月份，不分页", httpMethod = "POST")
-    @PostMapping("/archive/{authorId}")
+    @GetMapping("/archives/{authorId}")
     public ResponseVO listArchiveMonthByAuthorId(@PathVariable("authorId") Integer authorId) {
         this.checkParam(authorId, "authorId", this.getClass());
 
@@ -110,8 +110,8 @@ public class ArticleController extends AbstractController<Article> {
         return ResponseUtils.success(maps);
     }
 
-    @ApiOperation(value = "批量查找文章-归档月份", notes = "根据用户id和归档月份分页查找文章接口", httpMethod = "POST")
-    @PostMapping("/archive/{authorId}/{month}")
+    @ApiOperation(value = "批量查找文章-通过归档月份", notes = "根据用户id和归档月份分页查找文章接口,月份格式：YYYY年MM月,并且进行url编码", httpMethod = "POST")
+    @GetMapping("/page/archive/{authorId}/{month}")
     public ResponseVO pageQueryByArchiveMonth(@PathVariable("authorId") Integer authorId,
                                               @PathVariable("month") String month) {
         this.checkParam(authorId, "authorId", this.getClass());
@@ -127,7 +127,7 @@ public class ArticleController extends AbstractController<Article> {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "articleDTO", value = "文章dto", dataTypeClass = ArticleDTO.class, paramType = "body")
     })
-    @PostMapping("/add")
+    @PostMapping()
     public ResponseVO add(@RequestBody @Validated ArticleDTO articleDTO, BindingResult result) {
 
         if (result.hasErrors()) {
@@ -145,14 +145,14 @@ public class ArticleController extends AbstractController<Article> {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "articleDTO", value = "文章dto", dataTypeClass = ArticleDTO.class, paramType = "body")
     })
-    @PutMapping("/update")
+    @PutMapping()
     public ResponseVO update(@RequestBody @Validated ArticleDTO articleDTO, BindingResult result) {
         if (result.hasErrors()) {
             log.error("【文章操作】修改文章，文章参数不正确，articleDTO={}", articleDTO);
             throw new GlobalException(ResponseEnum.PARAM_ERROR.getCode(), result.getFieldError().getDefaultMessage());
         }
 
-        ArticleDTO dto = articleService.getById(articleDTO.getArticleId());
+        ArticleDTO dto = articleService.getById(SecurityUtils.getAuthorId(), articleDTO.getArticleId());
         if (!this.checkMe(dto.getAuthorId())) {
             log.error("【文章操作】修改文章，没有权限，articleDTO={}", articleDTO);
             throw new GlobalException(ResponseEnum.NOT_AUTHORITY);
@@ -167,12 +167,12 @@ public class ArticleController extends AbstractController<Article> {
     @ApiImplicitParams({
             @ApiImplicitParam(value = "文章id", name = "articleId", paramType = "path")
     })
-    @DeleteMapping("/delete/{articleId}")
+    @DeleteMapping("/{articleId}")
     public ResponseVO delete(@PathVariable("articleId") Integer articleId) {
 
         this.checkParam(articleId, "articleId", this.getClass());
 
-        ArticleDTO articleDTO = articleService.getById(articleId);
+        ArticleDTO articleDTO = articleService.getById(SecurityUtils.getAuthorId(), articleId);
         if (!this.checkMe(articleDTO.getAuthorId())) {
             log.error("【文章操作】删除文章，没有权限，articleDTO={}", articleDTO);
             throw new GlobalException(ResponseEnum.NOT_AUTHORITY);
@@ -182,32 +182,28 @@ public class ArticleController extends AbstractController<Article> {
         return ResponseUtils.success();
     }
 
-
-    @ApiOperation(value = "点击喜欢", notes = "增加喜欢接口，返回点赞后的点赞数", httpMethod = "POST")
+    @ApiOperation(value = "查询是否点赞", notes = "查询是否点赞接口，返回布尔值", httpMethod = "GET")
     @ApiImplicitParams({
             @ApiImplicitParam(value = "文章id", name = "articleId", paramType = "path")
     })
-    @PostMapping("/like/{articleId}")
+    @GetMapping("/like/{articleId}")
+    public ResponseVO getLikeStatus(@PathVariable("articleId")Integer articleId) {
+        checkParam(articleId, "articleId", getClass());
+
+        Boolean likeStatus = articleService.getLikeStatus(SecurityUtils.getAuthorId(), articleId);
+
+        return ResponseUtils.success(likeStatus);
+    }
+
+    @ApiOperation(value = "切换喜欢状态", notes = "切换喜欢接口，返回点赞后的点赞数，只需把文章id传入，会自动判断是否点赞", httpMethod = "PUT")
+    @ApiImplicitParams({
+            @ApiImplicitParam(value = "文章id", name = "articleId", paramType = "path")
+    })
+    @PutMapping("/like/{articleId}")
     public ResponseVO addLike(@PathVariable("articleId") Integer articleId) {
         this.checkParam(articleId, "articleId", this.getClass());
 
-        Integer articleLike = articleService.saveOrUpdateLike(articleId);
-
-        return ResponseUtils.success(articleLike);
-    }
-
-    @ApiOperation(value = "取消喜欢", notes = "取消喜欢接口", httpMethod = "DELETE")
-    @ApiImplicitParams({
-            @ApiImplicitParam(value = "文章id", name = "articleId", paramType = "path")
-    })
-    @DeleteMapping("/like/{articleId}")
-    public ResponseVO reduceLike(@PathVariable("articleId") Integer articleId) {
-        if (StringUtils.isEmpty(articleId)) {
-            log.error("【文章操作】增加喜欢出错，文章id不能为空，articleId={}", articleId);
-            throw new GlobalException(ResponseEnum.PARAM_ERROR);
-        }
-
-        Integer articleLike = articleService.removeOrUpdateLike(articleId);
+        Integer articleLike = articleService.switchLike(SecurityUtils.getAuthorId(), articleId);
 
         return ResponseUtils.success(articleLike);
     }

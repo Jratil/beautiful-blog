@@ -1,16 +1,14 @@
 package co.jratil.blogarticle.service;
 
 import co.jratil.blogapi.entity.PageParam;
+import co.jratil.blogapi.entity.dto.AuthorDTO;
+import co.jratil.blogapi.service.*;
 import co.jratil.blogapi.wrapper.VisibleWrapper;
 import co.jratil.blogapi.entity.dataobject.Article;
 import co.jratil.blogapi.entity.dataobject.ArticleCategory;
 import co.jratil.blogapi.entity.dto.ArticleDTO;
 import co.jratil.blogapi.exception.GlobalException;
 import co.jratil.blogapi.enums.ResponseEnum;
-import co.jratil.blogapi.service.AbstractService;
-import co.jratil.blogapi.service.ArticleCategoryService;
-import co.jratil.blogapi.service.ArticleService;
-import co.jratil.blogapi.service.AuthorService;
 import co.jratil.blogarticle.mapper.ArticleMapper;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.dubbo.config.annotation.Service;
@@ -46,9 +44,9 @@ public class ArticleServiceImpl extends AbstractService<Article> implements Arti
     @Reference
     private AuthorService authorService;
 
-    @Cacheable(value = "getById", key = "#articleId")
+    @Cacheable(value = "ArticleService::getById", key = "#articleId")
     @Override
-    public ArticleDTO getById(Integer articleId) {
+    public ArticleDTO getById(Integer authorId, Integer articleId) {
 
         Article article = articleMapper.selectOne(Wrappers.<Article>lambdaQuery()
                 .eq(Article::getArticleId, articleId));
@@ -58,13 +56,19 @@ public class ArticleServiceImpl extends AbstractService<Article> implements Arti
             throw new GlobalException(ResponseEnum.ARTICLE_NOT_EXIST);
         }
 
+        AuthorDTO authorDTO = authorService.getById(article.getAuthorId());
+        String authorName = authorDTO.getAuthorName();
         String categoryName = categoryService.getById(article.getCategoryId()).getCategoryName();
-        String authorName = authorService.getById(article.getAuthorId()).getAuthorName();
 
         ArticleDTO articleDTO = new ArticleDTO();
         BeanUtils.copyProperties(article, articleDTO);
         articleDTO.setCategoryName(categoryName);
         articleDTO.setAuthorName(authorName);
+        articleDTO.setAuthorAvatar(authorDTO.getAuthorAvatar());
+
+        // 查询自己是否点赞
+        int result = articleMapper.selectLikeStatus(articleId, authorId);
+        articleDTO.setHasLike(result > 0);
 
         return articleDTO;
     }
@@ -178,7 +182,6 @@ public class ArticleServiceImpl extends AbstractService<Article> implements Arti
         return dosToDtos(articles);
     }
 
-    @CacheEvict(value = "getById", allEntries = true)
     @Transactional
     @Override
     public void save(ArticleDTO articleDTO) {
@@ -198,19 +201,19 @@ public class ArticleServiceImpl extends AbstractService<Article> implements Arti
         }
     }
 
-    @CacheEvict(value = "getById", key = "#articleId")
+    @CacheEvict(value = "ArticleService::getById", key = "#articleId")
     @Transactional
     @Override
     public void remove(Integer articleId) {
 
         // 判断该文章是否存在
-        ArticleDTO articleDTO = this.getById(articleId);
+        this.articleExist(articleId);
 
         // 存在则删除
         articleMapper.deleteById(articleId);
     }
 
-    @CacheEvict(value = "getById", key = "#articleDTO.getArticleId()")
+    @CacheEvict(value = "ArticleService::getById", key = "#articleDTO.getArticleId()")
     @Transactional
     @Override
     public void update(ArticleDTO articleDTO) {
@@ -227,52 +230,48 @@ public class ArticleServiceImpl extends AbstractService<Article> implements Arti
         articleMapper.updateById(article);
     }
 
+    @Override
+    public Boolean getLikeStatus(Integer authorId, Integer articleId) {
+        int result = articleMapper.selectLikeStatus(articleId, authorId);
+        return result > 0;
+    }
+
     /**
      * 增加文章喜欢数
      *
      * @param articleId 文章id
      * @return 点击之后的喜欢的数量
      */
-    @Cacheable(value = "addArticleLike", key = "'article_'+#articleId")
     @Transactional
     @Override
-    public synchronized Integer saveOrUpdateLike(Integer articleId) {
+    public synchronized Integer switchLike(Integer authorId, Integer articleId) {
 
-        Integer articleLike = selectLike(articleId);
-        articleLike = articleLike + 1;
+        Article article = this.articleExist(articleId);
+        int result = articleMapper.selectLikeStatus(articleId, authorId);
+        int praise = article.getArticleLike();
 
-        articleMapper.updateArticleLike(articleLike);
+        if (result > 0) {
+            praise = praise - 1;
+            articleMapper.deleteLikeArticleId(articleId, authorId);
+            articleMapper.updateArticleLikeNum(praise, articleId);
+        } else {
+            praise = praise + 1;
+            articleMapper.saveLikeArticleId(articleId, authorId);
+            articleMapper.updateArticleLikeNum(praise, articleId);
+        }
 
-        return articleLike;
+        return praise;
     }
 
+    private Article articleExist(Integer articleId) {
+        Article article = articleMapper.selectOne(Wrappers.<Article>lambdaQuery()
+                .eq(Article::getArticleId, articleId));
 
-    /**
-     * 减少文章喜欢数
-     *
-     * @param articleId 文章id
-     * @return 点击之后的喜欢的数量
-     */
-    @Cacheable(value = "article", key = "'article_'+#articleId")
-    @Transactional
-    @Override
-    public synchronized Integer removeOrUpdateLike(Integer articleId) {
-
-        Integer articleLike = selectLike(articleId);
-        articleLike = articleLike - 1;
-
-        articleMapper.updateArticleLike(articleLike);
-
-        return articleLike;
-    }
-
-    private Integer selectLike(Integer articleId) {
-        Integer articleLike = articleMapper.selectLike(articleId);
-        if (articleLike == null) {
-            log.error("【文章服务】增加喜欢出错，文章不存在，articleId={}", articleId);
+        if (article == null) {
+            log.error("【文章服务】查询文章出错，文章不存在，articleId={}", articleId);
             throw new GlobalException(ResponseEnum.ARTICLE_NOT_EXIST);
         }
-        return articleLike;
+        return article;
     }
 
     private PageInfo<ArticleDTO> dosToDtos(List<Article> articleList) {
@@ -289,10 +288,11 @@ public class ArticleServiceImpl extends AbstractService<Article> implements Arti
                     BeanUtils.copyProperties(item, dto);
 
                     String categoryName = categoryService.getById(item.getCategoryId()).getCategoryName();
-                    if(StringUtils.isEmpty(authorName[0])) {
+                    if (StringUtils.isEmpty(authorName[0])) {
                         authorName[0] = authorService.getById(item.getAuthorId()).getAuthorName();
                     }
-
+                    int result = articleMapper.selectLikeStatus(item.getArticleId(), item.getAuthorId());
+                    dto.setHasLike(result > 0);
                     dto.setCategoryName(categoryName);
                     dto.setAuthorName(authorName[0]);
                     return dto;

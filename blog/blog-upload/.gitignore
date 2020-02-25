@@ -4,6 +4,10 @@ target/
 !**/src/main/**
 !**/src/test/**
 
+/src/main/resources/privateKey/qiniuKey.properties
+
+/src/main/resources/application.yml
+
 ### STS ###
 .apt_generated
 .classpath
