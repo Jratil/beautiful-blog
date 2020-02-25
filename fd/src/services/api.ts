@@ -25,7 +25,7 @@ export default {
     archiveGet: 'GET /article/archives/:authorId',
 
     // article
-    articleAdd: 'POST /article/add',
+    articleAdd: 'POST /article',
     articleDelete: 'POST /article/delete',
     articleToggleLike: 'PUT /article/like/:articleId',
     articleEdit: 'PUT /article/update/:articleId',
