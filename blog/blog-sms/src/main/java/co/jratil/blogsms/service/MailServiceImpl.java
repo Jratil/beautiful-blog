@@ -7,8 +7,6 @@ import co.jratil.blogapi.service.MailService;
 import co.jratil.blogapi.service.RedisService;
 import co.jratil.blogsms.constant.MailConstant;
 import co.jratil.blogsms.utils.VerifyCodeUtil;
-import com.alibaba.dubbo.config.annotation.Reference;
-import com.alibaba.dubbo.config.annotation.Service;
 import com.aliyuncs.DefaultAcsClient;
 import com.aliyuncs.IAcsClient;
 import com.aliyuncs.dm.model.v20151123.SingleSendMailRequest;
@@ -18,17 +16,14 @@ import com.aliyuncs.http.MethodType;
 import com.aliyuncs.profile.DefaultProfile;
 import com.aliyuncs.profile.IClientProfile;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.dubbo.config.annotation.Reference;
+import org.apache.dubbo.config.annotation.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 
-import javax.mail.internet.MimeMessage;
 import java.io.IOException;
-import java.util.Base64;
 import java.util.Properties;
 import java.util.Scanner;
 
@@ -106,7 +101,7 @@ public class MailServiceImpl implements MailService {
 
         } catch (ClientException e) {
             log.error("【邮件服务】发送邮件失败，错误码={}, message={}", e.getErrCode(), e.getErrMsg());
-            throw new GlobalException(500, "邮件服务】发送邮件失败，错误码：" + e.getErrCode());
+            throw new GlobalException(500, "【邮件服务】发送邮件失败，错误码：" + e.getErrCode());
         } catch (IOException e) {
             log.error("【邮件服务】解析邮件模板出错");
             throw new GlobalException(ResponseEnum.MAIL_SEND_ERROR);

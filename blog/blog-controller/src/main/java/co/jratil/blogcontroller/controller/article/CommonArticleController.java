@@ -5,9 +5,10 @@ import co.jratil.blogapi.entity.dto.ArticleDTO;
 import co.jratil.blogapi.response.ResponseUtils;
 import co.jratil.blogapi.response.ResponseVO;
 import co.jratil.blogapi.service.ArticleService;
-import com.alibaba.dubbo.config.annotation.Reference;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
+import org.apache.dubbo.config.annotation.Reference;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 

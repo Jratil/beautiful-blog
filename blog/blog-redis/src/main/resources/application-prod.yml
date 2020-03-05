@@ -1,0 +1,39 @@
+server:
+  port: 8870
+
+dubbo:
+  application:
+    name: blog-redis
+  registry:
+    address: zookeeper://47.115.6.99:4362
+  metadata-report:
+    address: zookeeper://47.115.6.99:4362
+  protocol:
+    name: dubbo
+    port: 12230
+  scan:
+    base-packages: co.jratil.blogredis.service
+
+spring:
+  application:
+    name: blog-redis
+
+  redis:
+    database: 0
+    host: 47.115.6.99
+    port: 26379
+    #password: ratil123
+
+    jedis:
+      pool:
+        max-active: 30
+        max-wait: 1000
+        max-idle: 10
+        min-idle: 5
+    timeout: 6000
+
+logging:
+  level:
+    root: info
+    org:
+      springframework: info

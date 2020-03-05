@@ -1,8 +1,8 @@
 package co.jratil.blogredis.service;
 
 import co.jratil.blogapi.service.RedisService;
-import com.alibaba.dubbo.config.annotation.Service;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.dubbo.config.annotation.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;

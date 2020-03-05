@@ -13,13 +13,13 @@ import co.jratil.blogauth.mapper.AuthorLoginMapper;
 import co.jratil.blogauth.mapper.AuthorMapper;
 import co.jratil.blogapi.enums.ResponseEnum;
 import co.jratil.blogapi.service.AuthorService;
-import com.alibaba.dubbo.config.annotation.Reference;
-import com.alibaba.dubbo.config.annotation.Service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.dubbo.config.annotation.Reference;
+import org.apache.dubbo.config.annotation.Service;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -47,7 +47,7 @@ public class AuthorServiceImpl extends AbstractService implements AuthorService 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
-    @Reference(interfaceClass = RedisService.class)
+    @Reference
     private RedisService redisService;
 
     /**
@@ -299,9 +299,10 @@ public class AuthorServiceImpl extends AbstractService implements AuthorService 
     private void verifyCode(String account, String verifyCode) {
 
         //TODO----验证码开关代码
-        Object redisVerifyCode = redisService.get(VerifyCodeConstant.REDIS_VERIFY_PREFIX + account);
+        String redisVerifyCode = (String) redisService.get(VerifyCodeConstant.REDIS_VERIFY_PREFIX + account);
         if (!verifyCode.equals(redisVerifyCode)) {
-            log.error("【用户注册】验证码不正确，verifyCode={}", verifyCode);
+            log.error("【用户注册】验证码不正确，verifyCode={}，redisCode={}", verifyCode, redisVerifyCode);
+            log.error("redis的key==>{}", VerifyCodeConstant.REDIS_VERIFY_PREFIX + account);
             throw new GlobalException(ResponseEnum.VERIFY_NOT_EQUAL);
         }
     }
