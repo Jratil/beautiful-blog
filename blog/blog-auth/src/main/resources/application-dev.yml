@@ -1,0 +1,51 @@
+server:
+  port: 8861
+
+dubbo:
+  application:
+    name: blog-auth
+  registry:
+    address: zookeeper://localhost:2181
+  metadata-report:
+    address: zookeeper://localhost:2181
+  protocol:
+    name: dubbo
+    port: 12221
+  scan:
+    base-packages: co.jratil.blogauth.service
+
+spring:
+  application:
+    name: blog-auth
+
+  datasource:
+    druid:
+      url: jdbc:mysql://localhost:3306/blog?characterEncoding=utf-8&useSSL=false&serverTimezone=GMT%2B8&allowPublicKeyRetrieval=true
+      username: ratil
+      password: ratil
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      # 初始化大小
+      initial-size: 5
+      # 最小空闲数
+      min-idle: 5
+      #最大活动数量
+      max-active: 30
+      #最大等待时间
+      max-wait: 6000
+
+mybatis:
+  mapper-locations: classpath*:mapper/*.xml
+
+# 分页插件配置
+pagehelper:
+  helper-dialect: mysql
+  reasonable: true
+  support-methods-arguments: true
+  params: count=countSql
+  default-count: true
+
+logging:
+  level:
+    root: info
+    org:
+      springframework: info

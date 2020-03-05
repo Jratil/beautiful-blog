@@ -1,0 +1,32 @@
+server:
+  port: 8872
+
+dubbo:
+  application:
+    name: blog-upload
+  registry:
+    address: zookeeper://47.115.6.99:4362
+  metadata-report:
+    address: zookeeper://47.115.6.99:4362
+  protocol:
+    name: dubbo
+    port: 12232
+  provider:
+    timeout: 120000
+  scan:
+    base-packages: co.jratil.blogupload.service
+
+spring:
+  application:
+    name: blog-upload
+
+  servlet:
+    multipart:
+      max-file-size: 2MB
+      max-request-size: 10MB
+
+qiniu:
+  bucket: blog-filess
+  link-pre: http://pic.blog.jratil.co/
+
+

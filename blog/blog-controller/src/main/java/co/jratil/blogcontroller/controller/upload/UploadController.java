@@ -7,12 +7,13 @@ import co.jratil.blogapi.response.ResponseVO;
 import co.jratil.blogapi.service.UploadService;
 import co.jratil.blogcontroller.constant.UploadConstant;
 import co.jratil.blogcontroller.controller.AbstractController;
-import com.alibaba.dubbo.config.annotation.Reference;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.dubbo.config.annotation.Reference;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 

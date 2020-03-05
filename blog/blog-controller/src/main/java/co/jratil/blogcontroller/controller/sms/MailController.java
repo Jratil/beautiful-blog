@@ -1,16 +1,15 @@
 package co.jratil.blogcontroller.controller.sms;
 
-import co.jratil.blogapi.entity.dto.AuthorForm;
 import co.jratil.blogapi.response.ResponseUtils;
 import co.jratil.blogapi.response.ResponseVO;
 import co.jratil.blogapi.service.MailService;
 import co.jratil.blogcontroller.controller.AbstractController;
-import com.alibaba.dubbo.config.annotation.Reference;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.dubbo.config.annotation.Reference;
 import org.springframework.web.bind.annotation.*;
 
 /**

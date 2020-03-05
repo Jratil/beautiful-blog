@@ -1,0 +1,34 @@
+server:
+  port: 8870
+
+spring:
+  profiles:
+    active: dev
+  application:
+    name: blog-redis
+  dubbo:
+    protocol:
+      name: dubbo
+      port: 12230
+    registry:
+      address: zookeeper://localhost:2181
+
+  redis:
+    database: 0
+    host: localhost
+    port: 26379
+    #password: ratil123
+
+    jedis:
+      pool:
+        max-active: 30
+        max-wait: 1000
+        max-idle: 10
+        min-idle: 5
+    timeout: 6000
+
+logging:
+  level:
+    root: info
+    org:
+      springframework: info
