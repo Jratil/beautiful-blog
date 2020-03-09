@@ -87,6 +87,16 @@ public abstract class AbstractController<T> {
     }
 
     /**
+     * 用于未登录查看权限，如果是设置了仅自己可见则抛出没权限异常
+     * @param visible
+     * @param responseEnum
+     */
+    protected void checkVisible(boolean visible, ResponseEnum responseEnum) {
+        if (!visible) {
+            throw new GlobalException(responseEnum);
+        }
+    }
+    /**
      * 单个查询中检查查询到的数据是否是全部可见
      * 并且和当前登录用户比较，判断是否有权查看
      *
@@ -94,8 +104,8 @@ public abstract class AbstractController<T> {
      * @param visible  查询出的 visible
      */
     protected void checkMeAndVisible(Integer authorId, boolean visible, ResponseEnum repEnum) {
-        if (!checkMe(authorId) && !visible) {
-            throw new GlobalException(repEnum);
+        if (!checkMe(authorId)) {
+            checkVisible(visible, repEnum);
         }
     }
 

@@ -30,7 +30,7 @@ public class SecurityUtils {
     }
 
     public static Integer getAuthorId() {
-        Integer authorId = (Integer) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return authorId;
+        Object authorId = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return authorId == "anonymousUser" ? null : (Integer) authorId;
     }
 }

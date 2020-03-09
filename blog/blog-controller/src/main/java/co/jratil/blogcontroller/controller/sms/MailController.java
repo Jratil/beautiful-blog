@@ -31,7 +31,7 @@ public class MailController extends AbstractController {
             @ApiImplicitParam(name = "toMail", value = "接受验证码的邮箱", paramType = "path"),
             @ApiImplicitParam(name = "type", value = "发送的验证码类型， 0：注册，1：找回密码", paramType = "path")
     })
-    @PostMapping("/send/{toMail}/{type}")
+    @PostMapping("/send/{toMail}/{type:\\d+}")
     public ResponseVO sendVerifyCode(@PathVariable("toMail") String toMail, @PathVariable("type")Integer type) {
 
         this.checkParam(toMail, "toMail", this.getClass());

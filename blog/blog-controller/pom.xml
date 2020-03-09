@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>co.jratil</groupId>
     <artifactId>blog-controller</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
     <name>blog-controller</name>
     <description>All controller of the project</description>
 
