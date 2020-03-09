@@ -36,7 +36,7 @@ public class ArticleCategoryController extends AbstractController {
     @ApiImplicitParams({
             @ApiImplicitParam(value = "类目id", name = "categoryId", paramType = "path"),
     })
-    @GetMapping("/{categoryId}")
+    @GetMapping("/{categoryId:\\d+}")
     public ResponseVO queryCategoryById(@PathVariable("categoryId") Integer categoryId) {
 
         // 检查参数
@@ -54,7 +54,7 @@ public class ArticleCategoryController extends AbstractController {
             @ApiImplicitParam(value = "用户id", name = "authorId", paramType = "path"),
             @ApiImplicitParam(value = "类目名称", name = "categoryName", paramType = "path")
     })
-    @GetMapping("/{authorId}/{categoryName}")
+    @GetMapping("/{authorId:\\d+}/{categoryName}")
     public ResponseVO queryCategoryByNameAndAuthorId(@PathVariable("categoryName") String categoryName,
                                                     @PathVariable("authorId") Integer authorId) {
 
@@ -72,7 +72,7 @@ public class ArticleCategoryController extends AbstractController {
     @ApiImplicitParams({
             @ApiImplicitParam(value = "用户id", name = "authorId", paramType = "path")
     })
-    @GetMapping("/page/{authorId}")
+    @GetMapping("/page/{authorId:\\d+}")
     public ResponseVO pageQueryByAuthorId (@PathVariable("authorId") Integer authorId) {
 
         this.checkParam(authorId, "authorId", this.getClass());
@@ -130,7 +130,7 @@ public class ArticleCategoryController extends AbstractController {
     @ApiImplicitParams({
             @ApiImplicitParam(value = "类目id", name = "categoryId", paramType = "path"),
     })
-    @DeleteMapping("/{categoryId}")
+    @DeleteMapping("/{categoryId:\\d+}")
     public ResponseVO deleteCategory(@PathVariable("categoryId") Integer categoryId) {
 
         this.checkParam(categoryId, "categoryId", this.getClass() );

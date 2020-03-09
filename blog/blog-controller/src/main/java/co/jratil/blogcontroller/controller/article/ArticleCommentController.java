@@ -33,7 +33,6 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/comment")
-@PreAuthorize("hasAnyRole('ADMIN', 'USER')")
 public class ArticleCommentController extends AbstractController<Comment> {
 
     @Reference
@@ -43,7 +42,7 @@ public class ArticleCommentController extends AbstractController<Comment> {
     @ApiImplicitParams({
             @ApiImplicitParam(value = "评论id", name = "commentId", paramType = "path")
     })
-    @GetMapping("/{commentId}")
+    @GetMapping("/{commentId:\\d+}")
     public ResponseVO queryCommentById(@PathVariable("commentId") Integer commentId) {
         checkParam(commentId, "commentId", this.getClass());
 
@@ -55,7 +54,7 @@ public class ArticleCommentController extends AbstractController<Comment> {
     @ApiImplicitParams({
             @ApiImplicitParam(value = "文章id", name = "articleId", paramType = "path")
     })
-    @GetMapping("/page/article/{articleId}")
+    @GetMapping("/page/article/{articleId:\\d+}")
     public ResponseVO pageQueryByArticleId(@PathVariable("articleId") Integer articleId) {
         checkParam(articleId, "articleId", this.getClass());
 
@@ -69,7 +68,7 @@ public class ArticleCommentController extends AbstractController<Comment> {
     @ApiImplicitParams({
             @ApiImplicitParam(value = "评论id", name = "commentId", paramType = "path")
     })
-    @GetMapping("/page/comment/{commentId}")
+    @GetMapping("/page/comment/{commentId:\\d+}")
     public ResponseVO pageQueryByParentCommentId(@PathVariable("commentId") Integer commentId) {
         checkParam(commentId, "commentId", this.getClass());
 
@@ -106,7 +105,7 @@ public class ArticleCommentController extends AbstractController<Comment> {
     @ApiImplicitParams({
             @ApiImplicitParam(value = "评论id", name = "commentId", paramType = "path")
     })
-    @DeleteMapping("/{commentId}")
+    @DeleteMapping("/{commentId:\\d+}")
     public ResponseVO delComment(@PathVariable("commentId") Integer commentId) {
 
         CommentDTO commentDTO = commentService.getById(commentId);
@@ -120,7 +119,7 @@ public class ArticleCommentController extends AbstractController<Comment> {
     @ApiImplicitParams({
             @ApiImplicitParam(value = "文章id", name = "articleId", paramType = "path")
     })
-    @GetMapping("/like/{articleId}")
+    @GetMapping("/like/{articleId:\\d+}")
     public ResponseVO getLikeIds(@PathVariable("articleId") Integer articleId) {
         checkParam(articleId, "articleId", getClass());
 
@@ -132,7 +131,7 @@ public class ArticleCommentController extends AbstractController<Comment> {
     @ApiImplicitParams({
             @ApiImplicitParam(value = "评论id", name = "commentId", paramType = "path")
     })
-    @PutMapping("/like/{commentId}")
+    @PutMapping("/like/{commentId:\\d+}")
     public ResponseVO addLike(@PathVariable("commentId") Integer commentId) {
         checkParam(commentId, "commentId", getClass());
 

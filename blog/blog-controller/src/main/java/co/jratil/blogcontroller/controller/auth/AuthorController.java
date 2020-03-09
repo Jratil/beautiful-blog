@@ -83,7 +83,7 @@ public class AuthorController extends AbstractController {
     }
 
     @ApiOperation(value = "查找用户", notes = "按用户id查找用户信息", httpMethod = "GET")
-    @GetMapping("/id/{authorId}")
+    @GetMapping("/id/{authorId:\\d+}")
     public ResponseVO queryAuthorById(@PathVariable("authorId") Integer authorId) {
         this.checkParam(authorId, "authorId", this.getClass());
 
@@ -155,7 +155,7 @@ public class AuthorController extends AbstractController {
 
     @ApiOperation(value = "删除用户", notes = "根据用户id删除用户-需要管理员权限", httpMethod = "DELETE")
     @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/{authorId}")
+    @DeleteMapping("/{authorId:\\d+}")
     public ResponseVO deleteAuthor(@PathVariable("authorId") Integer authorId) {
         this.checkParam(authorId, "authorId", this.getClass());
 

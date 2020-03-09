@@ -53,6 +53,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/auth/register").permitAll()
                 .antMatchers("/update/password").permitAll()
                 .antMatchers("/sms/**").permitAll()
+                // 对于非隐私文章可未登录访问，放行相关api
+                .antMatchers(HttpMethod.GET, "/article/*").permitAll()
+                .antMatchers("/auth/account/*").permitAll()
+                .antMatchers("/comment/page/article/*").permitAll()
+                .antMatchers("/comment/page/comment/*").permitAll()
                 // swagger start，放行 swagger 相关资源
                 .antMatchers("/swagger").permitAll()
                 .antMatchers("/swagger-ui.html").permitAll()

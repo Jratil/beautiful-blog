@@ -56,6 +56,7 @@ public class ArticleServiceImpl extends AbstractService<Article> implements Arti
             throw new GlobalException(ResponseEnum.ARTICLE_NOT_EXIST);
         }
 
+        // 查询文章作者的一些信息
         AuthorDTO authorDTO = authorService.getById(article.getAuthorId());
         String authorName = authorDTO.getAuthorName();
         String categoryName = categoryService.getById(article.getCategoryId()).getCategoryName();
@@ -67,7 +68,10 @@ public class ArticleServiceImpl extends AbstractService<Article> implements Arti
         articleDTO.setAuthorAvatar(authorDTO.getAuthorAvatar());
 
         // 查询自己是否点赞
-        int result = articleMapper.selectLikeStatus(articleId, authorId);
+        int result = 0;
+        if (authorId != null) {
+            result = articleMapper.selectLikeStatus(articleId, authorId);
+        }
         articleDTO.setHasLike(result > 0);
 
         return articleDTO;
