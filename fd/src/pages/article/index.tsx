@@ -11,20 +11,23 @@ import CommentItem from './components/CommentItem'
 import styles from './index.less'
 import { ICategory } from '../category/model'
 import CollectSVG from 'icons/collection.svg'
+import EditSVG from 'icons/edit.svg'
 import CommentReply from './components/CommentReply'
 import classnames from 'classnames'
+import { router } from 'umi'
 
 interface IProps extends connectProps {
+    userId: number
     detail: IArticle
     comments: IComment[]
     categories: ICategory[]
     likedComments: number[]
 }
 
-const Page: React.FC<IProps> = ({ detail, categories, comments, likedComments }) => {
+const Page: React.FC<IProps> = ({ userId, detail, categories, comments, likedComments }) => {
     const { articleId } = useParams()
     const dispatch = useDispatch()
-    const { articleTitle, articleContent, categoryId, articleLike, hasLike } = detail
+    const { authorId, articleTitle, articleContent, categoryId, articleLike, hasLike } = detail
     useEffect(() => {
         dispatch({ type: 'article/get', payload: { articleId } })
         dispatch({ type: 'article/getLikedComments', payload: { articleId } })
@@ -37,6 +40,10 @@ const Page: React.FC<IProps> = ({ detail, categories, comments, likedComments })
 
     const handleLike = () => {
         dispatch({ type: 'article/like', payload: { articleId } })
+    }
+
+    const handleEdit = () => {
+        router.push(`/write?articleId=${articleId}`)
     }
 
     return (
@@ -73,10 +80,14 @@ const Page: React.FC<IProps> = ({ detail, categories, comments, likedComments })
                             className={classnames(styles.panel_btn, hasLike ? styles.like_active : '')}
                             type="like"
                             theme={hasLike ? 'filled' : 'outlined'}
+                            title={hasLike ? '取消点赞' : '点赞'}
                         />
                     </Badge>
                 </div>
-                <Icon component={CollectSVG} className={styles.panel_btn} />
+                <Icon component={CollectSVG} className={styles.panel_btn} title="收藏" />
+                {userId === authorId && (
+                    <Icon component={EditSVG} className={styles.panel_btn} title="编辑" onClick={handleEdit} />
+                )}
                 <div className={styles.tip}>分享</div>
                 <Icon className={styles.panel_btn} type="weibo" />
                 <Icon className={styles.panel_btn} type="qq" />
@@ -90,7 +101,8 @@ const Page: React.FC<IProps> = ({ detail, categories, comments, likedComments })
     )
 }
 
-export default connect(({ article, category }: connectState) => ({
+export default connect(({ app, article, category }: connectState) => ({
+    userId: app.userInfo.authorId,
     detail: article.detail,
     comments: article.comments,
     likedComments: article.likedComments,

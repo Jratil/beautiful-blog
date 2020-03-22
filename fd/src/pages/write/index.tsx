@@ -15,11 +15,15 @@ import { useLocation } from 'react-router'
 import DelSVG from 'icons/close.svg'
 import BrowseSVG from 'icons/browse.svg'
 import showdown from 'showdown'
+import { IArticle } from '../article/model'
 const converter = new showdown.Converter()
+
+type IType = 'add' | 'edit'
 
 interface IProps extends connectProps {
     categories: ICategory[]
     authorId: number
+    detail: IArticle
 }
 
 interface IDraft {
@@ -46,13 +50,14 @@ const initDraft: IDraft = {
     time: '',
     category: 0
 }
-const Write: React.FC<IProps> = ({ categories, authorId }) => {
+const Write: React.FC<IProps> = ({ categories, detail, authorId }) => {
     const dispatch = useDispatch()
     const [hash, setHash] = useState<string>('')
     const [value, setValue] = useState<string>('')
     const [draft, setDraft] = useState<IDraft>(initDraft)
     const [drafts, setDrafts] = useLocalStorageState<IDrafts>(SAVE_KEY, {})
     const location = useLocation()
+    const { articleId } = location.query
 
     const MD2BF: ExtendControlType = {
         key: 'custom-md2bf',
@@ -88,8 +93,13 @@ const Write: React.FC<IProps> = ({ categories, authorId }) => {
     // )
 
     useEffect(() => {
-        const hash = getHash()
-        setHash(hash)
+        if (articleId) {
+            //  编辑文章
+            dispatch({ type: 'article/get', payload: { articleId } })
+        } else {
+            const hash = getHash()
+            setHash(hash)
+        }
     }, [])
 
     useEffect(() => {
@@ -101,6 +111,12 @@ const Write: React.FC<IProps> = ({ categories, authorId }) => {
             setDraft(tempDraft)
         }
     }, [hash, drafts])
+
+    useEffect(() => {
+        const { articleContent, articleTitle, categoryId } = detail
+        setDraft({ ...draft, title: articleTitle, category: categoryId })
+        setValue(BraftEditor.createEditorState(articleContent))
+    }, [detail])
 
     useEffect(() => {
         if (authorId !== 0) dispatch({ type: 'category/get', payload: { authorId } })
@@ -150,6 +166,28 @@ const Write: React.FC<IProps> = ({ categories, authorId }) => {
                 articleTitle: title,
                 articleContent: content,
                 categoryId: category
+            },
+            callback
+        })
+    }
+
+    const handleEdit = () => {
+        const { title, category, content } = draft
+        const callback = () => {
+            // const tmp = { ...drafts }
+            // delete tmp[hash]
+            // setDrafts(tmp)
+            //TODO  可以返回文章id ，跳转到文章详情页 ，提升用户体验
+            router.push('/')
+        }
+        dispatch({
+            type: 'write/edit',
+            payload: {
+                authorId,
+                articleTitle: title,
+                articleContent: content,
+                categoryId: category,
+                articleId: detail.articleId
             },
             callback
         })
@@ -257,11 +295,13 @@ const Write: React.FC<IProps> = ({ categories, authorId }) => {
                     </FormItem>
                 </Form>
                 <Divider />
-                <Button onClick={handleSave} style={{ marginRight: 12 }}>
-                    保存
-                </Button>
-                <Button type="primary" onClick={handlePublish}>
-                    发布
+                {!articleId && (
+                    <Button onClick={handleSave} style={{ marginRight: 12 }}>
+                        保存
+                    </Button>
+                )}
+                <Button type="primary" onClick={articleId ? handleEdit : handlePublish}>
+                    {articleId ? '完成' : '发布'}
                 </Button>
 
                 {Object.keys(drafts).length > 0 && (
@@ -280,7 +320,8 @@ const Write: React.FC<IProps> = ({ categories, authorId }) => {
     )
 }
 
-export default connect(({ app, category }: connectState) => ({
+export default connect(({ app, article, category }: connectState) => ({
     authorId: app.userInfo.authorId,
+    detail: article.detail,
     categories: category.categories
 }))(Write)

@@ -12,6 +12,7 @@ const {
 } = api
 
 export interface IArticle {
+    authorId: number
     articleContent: string
     articleId: number
     articleSubtitle: string
@@ -73,6 +74,7 @@ const article: IModel = {
     namespace: 'article',
     state: {
         detail: {
+            authorId: 0,
             articleContent: '',
             articleId: 0,
             articleSubtitle: '',

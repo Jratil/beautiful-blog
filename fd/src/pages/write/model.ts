@@ -9,19 +9,24 @@ interface IModel extends Model {
     state: any
     effects: {
         addArticle: Effect
+        edit: Effect
     }
     reducers: {
         updateState: Reducer
     }
 }
 
-const { articleAdd } = api
+const { articleAdd, articleEdit } = api
 const WriteModel: IModel = {
     namespace: 'write',
     state: {},
     effects: {
         *addArticle({ payload, callback }, { call }) {
             const res = yield call(articleAdd, payload)
+            if (res && callback) callback()
+        },
+        *edit({ payload, callback }, { call }) {
+            const res = yield call(articleEdit, payload)
             if (res && callback) callback()
         }
     },
