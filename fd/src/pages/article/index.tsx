@@ -4,7 +4,7 @@ import { connect, useDispatch } from 'dva'
 import { Icon, Badge, Modal, message } from 'antd'
 import { useParams } from 'react-router'
 import BraftEditor, { EditorState } from 'braft-editor'
-import moment from 'moment'
+import Time from 'time.js'
 import { connectState, connectProps } from '@/models/connect'
 import { IArticle, IComment } from './model'
 import CommentItem from './components/CommentItem'
@@ -28,7 +28,7 @@ interface IProps extends connectProps {
 const Page: React.FC<IProps> = ({ userId, detail, categories, comments, likedComments }) => {
     const { articleId } = useParams()
     const dispatch = useDispatch()
-    const { authorId, articleTitle, articleContent, categoryId, articleLike, hasLike } = detail
+    const { authorId, articleTitle, articleContent, categoryId, articleLike, hasLike, createTime, lastUpdate } = detail
     useEffect(() => {
         dispatch({ type: 'article/get', payload: { articleId } })
         dispatch({ type: 'article/getLikedComments', payload: { articleId } })
@@ -65,6 +65,10 @@ const Page: React.FC<IProps> = ({ userId, detail, categories, comments, likedCom
         <div className={styles.view}>
             <div className={styles.article_area}>
                 <div className={styles.article_title}>{articleTitle}</div>
+                <div className={styles.article_time}>
+                    <span className={styles.article_create_time}>创建于：{Time.ago(createTime)}</span>
+                    <span className={styles.article_last_update_time}>最后修改于：{Time.ago(lastUpdate * 1000)}</span>
+                </div>
                 <div className={styles.article_desc}>{categoryName}</div>
                 {/* <article></article> */}
                 {/* TODO: 后期取消 BraftEditor 展示，改为 article 标签，有利于 SEO */}

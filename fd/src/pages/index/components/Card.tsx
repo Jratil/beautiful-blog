@@ -10,7 +10,7 @@ interface IProps {
 }
 
 const Card: React.FC<IProps> = ({ data }) => {
-    const { articleTitle, articleSubtitle, articleId, authorName, articleLike, lastUpdate, hasLike } = data
+    const { articleTitle, articleSubtitle, articleId, authorName, articleLike, createTime, hasLike } = data
     return (
         <Link to={`/article/${articleId}`} className={styles.article_wrapper}>
             <div className={styles.card_title}>{articleTitle}</div>
@@ -26,7 +26,7 @@ const Card: React.FC<IProps> = ({ data }) => {
                 </span>
                 <span className={styles.fr}>
                     <Icon type="history" className={styles.card_icon} />
-                    {moment(Number(lastUpdate) * 1000).format('YYYY-MM-DD HH:mm:ss')}
+                    {moment(Number(createTime) * 1000).format('YYYY-MM-DD HH:mm:ss')}
                 </span>
             </div>
         </Link>

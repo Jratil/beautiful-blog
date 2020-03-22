@@ -13,6 +13,7 @@ export interface IArticle {
     read: number
     author_id: number
     authorName: string
+    createTime: number
     lastUpdate: string
     hasLike: boolean
 }

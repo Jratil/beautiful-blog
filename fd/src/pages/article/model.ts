@@ -22,6 +22,8 @@ export interface IArticle {
     categoryId: number
     visible: boolean
     hasLike: boolean
+    createTime: number
+    lastUpdate: number
 }
 
 export interface IComment {
@@ -84,7 +86,9 @@ const article: IModel = {
             articleLike: 0, //  后端未添加
             categoryId: 0,
             visible: true,
-            hasLike: false
+            hasLike: false,
+            createTime: 0,
+            lastUpdate: 0
         },
         comments: [],
         likedComments: []
