@@ -26,7 +26,7 @@ export default {
 
     // article
     articleAdd: 'POST /article',
-    articleDelete: 'POST /article/delete',
+    articleDelete: 'DELETE /article/:articleId',
     articleToggleLike: 'PUT /article/like/:articleId',
     articleEdit: 'PUT /article',
     articleGetById: 'GET /article/:articleId',

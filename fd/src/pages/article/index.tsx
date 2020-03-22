@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo } from 'react'
 // import { router } from 'umi'
 import { connect, useDispatch } from 'dva'
-import { Icon, Badge } from 'antd'
+import { Icon, Badge, Modal, message } from 'antd'
 import { useParams } from 'react-router'
 import BraftEditor, { EditorState } from 'braft-editor'
 import moment from 'moment'
@@ -12,6 +12,7 @@ import styles from './index.less'
 import { ICategory } from '../category/model'
 import CollectSVG from 'icons/collection.svg'
 import EditSVG from 'icons/edit.svg'
+import DeleteSVG from 'icons/delete.svg'
 import CommentReply from './components/CommentReply'
 import classnames from 'classnames'
 import { router } from 'umi'
@@ -44,6 +45,20 @@ const Page: React.FC<IProps> = ({ userId, detail, categories, comments, likedCom
 
     const handleEdit = () => {
         router.push(`/write?articleId=${articleId}`)
+    }
+
+    const handleDelete = () => {
+        const deleteCallback = () => {
+            message.success('删除成功！')
+            router.push('/')
+        }
+        Modal.confirm({
+            title: '提示',
+            content: '是否删除该文章？',
+            onOk: () => {
+                dispatch({ type: 'article/delete', payload: { articleId }, callback: deleteCallback })
+            }
+        })
     }
 
     return (
@@ -86,7 +101,10 @@ const Page: React.FC<IProps> = ({ userId, detail, categories, comments, likedCom
                 </div>
                 <Icon component={CollectSVG} className={styles.panel_btn} title="收藏" />
                 {userId === authorId && (
-                    <Icon component={EditSVG} className={styles.panel_btn} title="编辑" onClick={handleEdit} />
+                    <>
+                        <Icon component={EditSVG} className={styles.panel_btn} title="编辑" onClick={handleEdit} />
+                        <Icon component={DeleteSVG} className={styles.panel_btn} title="删除" onClick={handleDelete} />
+                    </>
                 )}
                 <div className={styles.tip}>分享</div>
                 <Icon className={styles.panel_btn} type="weibo" />

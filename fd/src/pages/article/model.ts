@@ -5,6 +5,7 @@ import { Reducer } from 'redux'
 const {
     articleGetById,
     articleToggleLike,
+    articleDelete,
     commentAdd,
     commentQueryByArticleId,
     commentToggleLiked,
@@ -61,6 +62,7 @@ interface IModel {
         like: Effect
         commentLike: Effect
         getChildComments: Effect
+        delete: Effect
     }
     reducers: {
         updateState: Reducer<IArticleState>
@@ -112,6 +114,11 @@ const article: IModel = {
             const { commentId } = payload
             const res = yield call(commentQueryChild, payload)
             yield put({ type: 'updateChildComment', payload: { commentId, list: res.list } })
+        },
+        *delete({ payload, callback }, { call, put }) {
+            const res = yield call(articleDelete, payload)
+            yield put({ type: 'updateLike', payload })
+            if (res && callback) callback()
         }
     },
     reducers: {
