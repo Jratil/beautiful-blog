@@ -35,14 +35,13 @@ import java.util.stream.Collectors;
 @Component
 public class ArticleServiceImpl extends AbstractService<Article> implements ArticleService {
 
-    @Autowired
-    private ArticleMapper articleMapper;
+    @Autowired private ArticleMapper articleMapper;
 
-    @Autowired
-    private ArticleCategoryService categoryService;
+    @Autowired private ArticleCategoryService categoryService;
 
-    @Reference
-    private AuthorService authorService;
+    @Reference private AuthorService authorService;
+
+    @Reference private ArticleSearchService articleSearchService;
 
     @Cacheable(value = "ArticleService::getById", key = "#articleId")
     @Override
@@ -199,6 +198,8 @@ public class ArticleServiceImpl extends AbstractService<Article> implements Arti
         article.setCreateTime(new Date());
 
         int result = articleMapper.insert(article);
+        articleSearchService.addArticleSearch(article);
+
         if (result < 1) {
             log.error("【文章服务】添加文章出错");
             throw new GlobalException(ResponseEnum.ADD_ARTICLE_ERROR);
@@ -215,6 +216,7 @@ public class ArticleServiceImpl extends AbstractService<Article> implements Arti
 
         // 存在则删除
         articleMapper.deleteById(articleId);
+        articleSearchService.deleteById(articleId);
     }
 
     @CacheEvict(value = "ArticleService::getById", key = "#articleDTO.getArticleId()")
@@ -232,6 +234,7 @@ public class ArticleServiceImpl extends AbstractService<Article> implements Arti
         article.setLastUpdate(new Date());
 
         articleMapper.updateById(article);
+        articleSearchService.updateById(article);
     }
 
     @Override
@@ -267,6 +270,11 @@ public class ArticleServiceImpl extends AbstractService<Article> implements Arti
         return praise;
     }
 
+    /**
+     * 判断文章是否存在
+     * @param articleId
+     * @return
+     */
     private Article articleExist(Integer articleId) {
         Article article = articleMapper.selectOne(Wrappers.<Article>lambdaQuery()
                 .eq(Article::getArticleId, articleId));
