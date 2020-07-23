@@ -4,6 +4,8 @@ target/
 !**/src/main/**
 !**/src/test/**
 application-prod.yml
+privateKey/qiniuKey.properties
+qiniuKey.properties
 Dockerfile
 
 ### STS ###
