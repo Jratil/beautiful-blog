@@ -1,9 +1,8 @@
 HELP.md
 target/
 !.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**
-!**/src/test/**
-secret-key.properties
+!**/src/main/**/target/
+!**/src/test/**/target/
 application-prod.yml
 
 ### STS ###
@@ -28,6 +27,8 @@ application-prod.yml
 /nbdist/
 /.nb-gradle/
 build/
+!**/src/main/**/build/
+!**/src/test/**/build/
 
 ### VS Code ###
 .vscode/

@@ -3,6 +3,8 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**
 !**/src/test/**
+application-prod.yml
+SMSKey.properties
 
 /src/main/resources/privateKey/SMSKey.properties
 

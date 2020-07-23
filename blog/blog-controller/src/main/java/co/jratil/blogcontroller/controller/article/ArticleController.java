@@ -60,6 +60,7 @@ public class ArticleController extends AbstractController<Article> {
     public ResponseVO queryArticle(@PathVariable("articleId") Integer articleId) {
         this.checkParam(articleId, "articleId", this.getClass());
 
+        System.out.println(articleId);
         ArticleDTO articleDTO = articleService.getById(SecurityUtils.getAuthorId(), articleId);
         this.checkVisible(articleDTO.getArticleVisible(), ResponseEnum.ARTICLE_NOT_EXIST);
 

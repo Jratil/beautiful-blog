@@ -1,22 +1,27 @@
 server:
-  port: 8861
+  port: 8873
 
 dubbo:
   application:
-    name: blog-auth
+    name: blog-es
   registry:
     address: zookeeper://localhost:2181
   metadata-report:
     address: zookeeper://localhost:2181
   protocol:
     name: dubbo
-    port: 12221
+    port: 12233
+    serialization: kryo
   scan:
-    base-packages: co.jratil.blogauth.service
+    base-packages: co.jratil.bloges.service
 
 spring:
+  elasticsearch:
+    rest:
+      uris: http://127.0.0.1:9200
+
   application:
-    name: blog-auth
+    name: blog-es
 
   datasource:
     druid:
@@ -32,20 +37,3 @@ spring:
       max-active: 30
       #最大等待时间
       max-wait: 6000
-
-mybatis:
-  mapper-locations: classpath*:mapper/*.xml
-
-# 分页插件配置
-pagehelper:
-  helper-dialect: mysql
-  reasonable: true
-  support-methods-arguments: true
-  params: count=countSql
-  default-count: true
-
-logging:
-  level:
-    root: info
-    org:
-      springframework: info
