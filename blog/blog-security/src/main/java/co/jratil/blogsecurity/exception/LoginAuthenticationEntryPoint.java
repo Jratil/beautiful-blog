@@ -1,7 +1,7 @@
 package co.jratil.blogsecurity.exception;
 
-import co.jratil.blogapi.enums.ResponseEnum;
-import co.jratil.blogapi.response.ResponseUtils;
+import co.jratil.blogcommon.enums.ResponseEnum;
+import co.jratil.blogcommon.response.ResponseUtils;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 
