@@ -1,13 +1,9 @@
 package co.jratil.bloges.service;
 
 import co.jratil.blogapi.entity.dataobject.Article;
-import co.jratil.bloges.entity.ArticleSearch;
-import co.jratil.bloges.repository.ArticleSearchRepository;
 import co.jratil.blogapi.service.ArticleSearchService;
-import com.github.pagehelper.PageInfo;
-import org.apache.dubbo.config.annotation.Service;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.search.query.QuerySearchRequest;
+import co.jratil.bloges.entity.ArticleEs;
+import co.jratil.bloges.repository.ArticleSearchRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -15,10 +11,8 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
-import org.springframework.data.elasticsearch.core.SearchPage;
-import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
-import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,13 +32,10 @@ public class ArticleSearchServiceImpl implements ArticleSearchService {
     @Autowired
     ElasticsearchRestTemplate template;
 
-    @Autowired
-    private ElasticsearchOperations operations;
-
     @Override
     public Page<Article> findByTitleOrContentAndVisible(String titleWord, String contentWord, Boolean visible, Pageable pageable) {
 
-        Page<ArticleSearch> articleSearchList =
+        Page<ArticleEs> articleSearchList =
                 articleSearchRepository.findByArticleVisibleOrArticleTitleAndArticleContent(visible, titleWord, contentWord, pageable);
 
         return convertForList(articleSearchList);
@@ -67,9 +58,9 @@ public class ArticleSearchServiceImpl implements ArticleSearchService {
 
     @Override
     public void deleteBatch(List<Integer> ids) {
-        List<ArticleSearch> list = new ArrayList<>();
+        List<ArticleEs> list = new ArrayList<>();
         ids.forEach(id -> {
-            ArticleSearch o = new ArticleSearch();
+            ArticleEs o = new ArticleEs();
             o.setArticleId(id);
             list.add(o);
         });
@@ -82,21 +73,21 @@ public class ArticleSearchServiceImpl implements ArticleSearchService {
      * @param article 要转换的 Article
      * @return
      */
-    private ArticleSearch convertTo(Article article) {
-        ArticleSearch articleSearch = new ArticleSearch();
-        BeanUtils.copyProperties(article, articleSearch);
-        return articleSearch;
+    private ArticleEs convertTo(Article article) {
+        ArticleEs articleEs = new ArticleEs();
+        BeanUtils.copyProperties(article, articleEs);
+        return articleEs;
     }
 
     /**
      * 将 ArticleSearch 转换成 Article
      *
-     * @param articleSearch 要转换的 ArticleSearch
+     * @param articleEs 要转换的 ArticleSearch
      * @return
      */
-    private Article convertFor(ArticleSearch articleSearch) {
+    private Article convertFor(ArticleEs articleEs) {
         Article article = new Article();
-        BeanUtils.copyProperties(articleSearch, article);
+        BeanUtils.copyProperties(articleEs, article);
         return article;
     }
 
@@ -106,14 +97,13 @@ public class ArticleSearchServiceImpl implements ArticleSearchService {
      * @param searches 原始的 Page 对象
      * @return
      */
-    private Page<Article> convertForList(Page<ArticleSearch> searches) {
+    private Page<Article> convertForList(Page<ArticleEs> searches) {
         List<Article> articles = new ArrayList<>();
         searches.getContent().forEach(item -> {
             Article article = convertFor(item);
             articles.add(article);
         });
-        Page<Article> articlePage = new PageImpl<>(articles,
+        return new PageImpl<>(articles,
                 searches.getPageable(), searches.getTotalElements());
-        return articlePage;
     }
 }

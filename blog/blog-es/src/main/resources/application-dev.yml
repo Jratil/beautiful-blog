@@ -23,17 +23,17 @@ spring:
   application:
     name: blog-es
 
-  datasource:
-    druid:
-      url: jdbc:mysql://localhost:3306/blog?characterEncoding=utf-8&useSSL=false&serverTimezone=GMT%2B8&allowPublicKeyRetrieval=true
-      username: root
-      password: ratil123
-      driver-class-name: com.mysql.cj.jdbc.Driver
-      # 初始化大小
-      initial-size: 5
-      # 最小空闲数
-      min-idle: 5
-      #最大活动数量
-      max-active: 30
-      #最大等待时间
-      max-wait: 6000
+#  datasource:
+#    druid:
+#      url: jdbc:mysql://localhost:3306/blog?characterEncoding=utf-8&useSSL=false&serverTimezone=GMT%2B8&allowPublicKeyRetrieval=true
+#      username: root
+#      password: ratil123
+#      driver-class-name: com.mysql.cj.jdbc.Driver
+#      # 初始化大小
+#      initial-size: 5
+#      # 最小空闲数
+#      min-idle: 5
+#      #最大活动数量
+#      max-active: 30
+#      #最大等待时间
+#      max-wait: 6000

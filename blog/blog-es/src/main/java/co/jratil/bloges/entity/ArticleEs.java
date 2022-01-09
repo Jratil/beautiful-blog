@@ -10,6 +10,7 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.Date;
 
 /**
  * @author jun
@@ -18,7 +19,7 @@ import java.time.LocalDate;
  */
 @Data
 @Document(indexName = "article", shards = 1, replicas = 0)
-public class ArticleSearch implements Serializable {
+public class ArticleEs implements Serializable {
 
     private static final long serialVersionUID = -5250856767979341350L;
 
@@ -35,6 +36,12 @@ public class ArticleSearch implements Serializable {
     private String articleTitle;
 
     /**
+     * 文章副标题，在文章列表展示
+     */
+    @Field(type = FieldType.Text, analyzer = "ik_smart")
+    private String articleSubtitle;
+
+    /**
      * 文章是否可见，不分词
      * 0：可见
      * 1：不可见
@@ -42,6 +49,21 @@ public class ArticleSearch implements Serializable {
     @Field(type = FieldType.Boolean)
     private Boolean articleVisible;
 
+    /**
+     * 文章的点赞（喜欢）数
+     * 默认：0
+     */
+    private Integer articleLike;
+
+    /**
+     * 作者的id
+     */
+    private Integer authorId;
+
+    /**
+     * 类目的id
+     */
+    private Integer categoryId;
 
     /**
      * 文章内容
@@ -52,12 +74,12 @@ public class ArticleSearch implements Serializable {
     /**
      * 文章创建时间
      */
-    @Field(type = FieldType.Date, format = DateFormat.date_time, pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDate createTime;
+    @Field(type = FieldType.Date, format = DateFormat.custom, pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date createTime;
 
     /**
      * 文章修改时间
      */
-    @Field(type = FieldType.Date, format = DateFormat.date_time, pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDate lastUpdate;
+    @Field(type = FieldType.Date, format = DateFormat.custom, pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date lastUpdate;
 }
