@@ -1,7 +1,7 @@
 package co.jratil.blogcontroller.controller.sms;
 
-import co.jratil.blogapi.response.ResponseUtils;
-import co.jratil.blogapi.response.ResponseVO;
+import co.jratil.blogcommon.response.ResponseUtils;
+import co.jratil.blogcommon.response.ResponseVO;
 import co.jratil.blogapi.service.MailService;
 import co.jratil.blogcontroller.controller.AbstractController;
 import io.swagger.annotations.Api;
@@ -9,6 +9,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.dubbo.config.annotation.Reference;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,7 +24,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/sms")
 public class MailController extends AbstractController {
 
-    @Reference
+    @DubboReference
     private MailService mailService;
 
     @ApiOperation(value = "发送验证码", notes = "发送验证码到邮箱", httpMethod = "POST")

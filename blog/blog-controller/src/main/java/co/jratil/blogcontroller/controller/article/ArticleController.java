@@ -3,13 +3,14 @@ package co.jratil.blogcontroller.controller.article;
 import co.jratil.blogapi.entity.PageParam;
 import co.jratil.blogapi.entity.dataobject.Article;
 import co.jratil.blogapi.entity.dataobject.ArticleCategory;
+import co.jratil.blogapi.entity.dto.ArticleArchiveDTO;
 import co.jratil.blogapi.entity.dto.ArticleDTO;
-import co.jratil.blogapi.exception.GlobalException;
-import co.jratil.blogapi.enums.ResponseEnum;
-import co.jratil.blogapi.response.ResponseVO;
-import co.jratil.blogapi.response.ResponseUtils;
 import co.jratil.blogapi.service.ArticleCategoryService;
 import co.jratil.blogapi.service.ArticleService;
+import co.jratil.blogcommon.enums.ResponseEnum;
+import co.jratil.blogcommon.exception.GlobalException;
+import co.jratil.blogcommon.response.ResponseUtils;
+import co.jratil.blogcommon.response.ResponseVO;
 import co.jratil.blogcontroller.controller.AbstractController;
 import co.jratil.blogsecurity.util.SecurityUtils;
 import com.github.pagehelper.PageInfo;
@@ -18,8 +19,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.dubbo.config.annotation.Reference;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -27,7 +27,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
-import java.util.Map;
 
 @Api(value = "ArticleController", tags = "3-文章处理接口")
 @Slf4j
@@ -35,10 +34,10 @@ import java.util.Map;
 @RequestMapping("/article")
 public class ArticleController extends AbstractController<Article> {
 
-    @Reference
+    @DubboReference
     private ArticleService articleService;
 
-    @Reference
+    @DubboReference
     private ArticleCategoryService categoryService;
 
     @GetMapping("/main_page")
@@ -99,17 +98,17 @@ public class ArticleController extends AbstractController<Article> {
 
     @ApiOperation(value = "查找归档的月份", notes = "根据用户id分页查找所有的归档月份，不分页", httpMethod = "POST")
     @GetMapping("/archives/{authorId:\\d+}")
-    public ResponseVO listArchiveMonthByAuthorId(@PathVariable("authorId") Integer authorId) {
+    public ResponseVO<List<ArticleArchiveDTO>> listArchiveMonthByAuthorId(@PathVariable("authorId") Integer authorId) {
         this.checkParam(authorId, "authorId", this.getClass());
 
-        List<Map<String, Object>> maps = articleService.listArchiveMonth(authorId, getVisible(authorId));
+        List<ArticleArchiveDTO> maps = articleService.listArchiveMonth(authorId, getVisible(authorId));
 
         return ResponseUtils.success(maps);
     }
 
     @ApiOperation(value = "批量查找文章-通过归档月份", notes = "根据用户id和归档月份分页查找文章接口,月份格式：YYYY年MM月,并且进行url编码", httpMethod = "POST")
     @GetMapping("/page/archive/{authorId:\\d+}/{month}")
-    public ResponseVO pageQueryByArchiveMonth(@PathVariable("authorId") Integer authorId,
+    public ResponseVO<PageInfo<ArticleDTO>> pageQueryByArchiveMonth(@PathVariable("authorId") Integer authorId,
                                               @PathVariable("month") String month) {
         this.checkParam(authorId, "authorId", this.getClass());
         this.checkParam(month, "month", this.getClass());

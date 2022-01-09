@@ -1,22 +1,25 @@
 package co.jratil.blogarticle.service;
 
 import co.jratil.blogapi.entity.PageParam;
+import co.jratil.blogapi.entity.dataobject.Article;
+import co.jratil.blogapi.entity.dataobject.ArticleCategory;
+import co.jratil.blogapi.entity.dto.ArticleArchiveDTO;
+import co.jratil.blogapi.entity.dto.ArticleDTO;
 import co.jratil.blogapi.entity.dto.AuthorDTO;
 import co.jratil.blogapi.service.*;
 import co.jratil.blogapi.wrapper.VisibleWrapper;
-import co.jratil.blogapi.entity.dataobject.Article;
-import co.jratil.blogapi.entity.dataobject.ArticleCategory;
-import co.jratil.blogapi.entity.dto.ArticleDTO;
-import co.jratil.blogapi.exception.GlobalException;
-import co.jratil.blogapi.enums.ResponseEnum;
 import co.jratil.blogarticle.mapper.ArticleMapper;
+import co.jratil.blogcommon.enums.ResponseEnum;
+import co.jratil.blogcommon.exception.GlobalException;
+import co.jratil.bloges.entity.ArticleEsRequest;
+import co.jratil.bloges.service.ArticleEsService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.dubbo.config.annotation.Reference;
-import org.apache.dubbo.config.annotation.Service;
+import org.apache.dubbo.config.annotation.DubboReference;
+import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -27,28 +30,33 @@ import org.springframework.util.StringUtils;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
-@Service(interfaceClass = ArticleService.class)
+@DubboService(interfaceClass = ArticleService.class)
 @Slf4j
 @Component
 public class ArticleServiceImpl extends AbstractService<Article> implements ArticleService {
 
-    @Autowired private ArticleMapper articleMapper;
+    @Autowired
+    private ArticleMapper articleMapper;
 
-    @Autowired private ArticleCategoryService categoryService;
+    @Autowired
+    private ArticleCategoryService categoryService;
 
-    @Reference private AuthorService authorService;
+    @DubboReference
+    private AuthorService authorService;
 
-    @Reference private ArticleSearchService articleSearchService;
+    @Autowired
+    private ArticleEsService articleEsService;
 
     @Cacheable(value = "ArticleService::getById", key = "#articleId")
     @Override
     public ArticleDTO getById(Integer authorId, Integer articleId) {
 
-        Article article = articleMapper.selectOne(Wrappers.<Article>lambdaQuery()
-                .eq(Article::getArticleId, articleId));
+        Article article = articleEsService.searchById(articleId);
+
+//        Article article = articleMapper.selectOne(Wrappers.<Article>lambdaQuery()
+//                .eq(Article::getArticleId, articleId));
 
         if (article == null) {
             log.error("【文章服务】查询文章出错，文章不存在，articleId={}", articleId);
@@ -83,22 +91,31 @@ public class ArticleServiceImpl extends AbstractService<Article> implements Arti
      * @return
      */
     @Override
-    public PageInfo<ArticleDTO> listByCategoryId(PageParam pageParam, Integer categoryId, boolean visible) {
+    public PageInfo<ArticleDTO> listByCategoryId(PageParam pageParam, Integer categoryId, boolean onlyVisible) {
 
         // 先查询类目
         ArticleCategory category = categoryService.getById(categoryId);
 
-        VisibleWrapper<Article> wrapper = new VisibleWrapper<>();
-        wrapper.select(Article.class, field -> !field.getColumn().equals("article_content"));
-        // 分页查询，排除查询文章内容，添加查询条件
-        wrapper.lambda()
-                .eqVisible(Article::getArticleVisible, visible)
-                .eq(Article::getCategoryId, categoryId)
-                .orderByDesc(Article::getCreateTime);
+        ArticleEsRequest articleEsRequest = new ArticleEsRequest();
+        articleEsRequest.setCategoryId(categoryId);
+        if (onlyVisible) {
+            articleEsRequest.setArticleVisible(true);
+        }
+        articleEsRequest.setPageIndex(pageParam.getPage());
+        articleEsRequest.setPageSize(pageParam.getCount());
+        List<Article> articleList = articleEsService.searchBatch(articleEsRequest);
 
-        // 分页查询
-        PageHelper.startPage(pageParam.getPage(), pageParam.getCount());
-        List<Article> articleList = articleMapper.selectList(wrapper);
+//        VisibleWrapper<Article> wrapper = new VisibleWrapper<>();
+//        wrapper.select(Article.class, field -> !field.getColumn().equals("article_content"));
+//        // 分页查询，排除查询文章内容，添加查询条件
+//        wrapper.lambda()
+//                .eqVisible(Article::getArticleVisible, onlyVisible)
+//                .eq(Article::getCategoryId, categoryId)
+//                .orderByDesc(Article::getCreateTime);
+//
+//        // 分页查询
+//        PageHelper.startPage(pageParam.getPage(), pageParam.getCount());
+//        List<Article> articleList = articleMapper.selectList(wrapper);
 
         return dosToDtos(articleList);
     }
@@ -111,32 +128,39 @@ public class ArticleServiceImpl extends AbstractService<Article> implements Arti
      * @return 查询到的文章
      */
     @Override
-    public PageInfo<ArticleDTO> listByAuthorId(PageParam pageParam, Integer authorId, boolean visible) {
+    public PageInfo<ArticleDTO> listByAuthorId(PageParam pageParam, Integer authorId, boolean onlyVisible) {
 
-        VisibleWrapper<Article> wrapper = new VisibleWrapper<>();
+        ArticleEsRequest request = new ArticleEsRequest();
+        request.setAuthorId(authorId);
+        request.setArticleVisible(onlyVisible);
+        request.setPageIndex(pageParam.getPage());
+        request.setPageSize(pageParam.getCount());
+        List<Article> articleList = articleEsService.searchBatch(request);
 
-        wrapper.select(Article.class, field -> !field.getColumn().equals("article_content"));
-        wrapper.lambda()
-                .eqVisible(Article::getArticleVisible, visible)
-                .eq(Article::getAuthorId, authorId)
-                .orderByDesc(Article::getCreateTime);
-
-        // 分页查询
-        PageHelper.startPage(pageParam.getPage(), pageParam.getCount());
-        List<Article> articleList = articleMapper.selectList(wrapper);
+//        VisibleWrapper<Article> wrapper = new VisibleWrapper<>();
+//
+//        wrapper.select(Article.class, field -> !field.getColumn().equals("article_content"));
+//        wrapper.lambda()
+//                .eqVisible(Article::getArticleVisible, onlyVisible)
+//                .eq(Article::getAuthorId, authorId)
+//                .orderByDesc(Article::getCreateTime);
+//
+//        // 分页查询
+//        PageHelper.startPage(pageParam.getPage(), pageParam.getCount());
+//        List<Article> articleList = articleMapper.selectList(wrapper);
 
         return dosToDtos(articleList);
     }
 
     @Override
-    public List<Map<String, Object>> listArchiveMonth(Integer authorId, boolean visible) {
+    public List<ArticleArchiveDTO> listArchiveMonth(Integer authorId, boolean visible) {
 
         VisibleWrapper<Article> wrapper = new VisibleWrapper<>();
         wrapper.lambda()
                 .eqVisible(Article::getArticleVisible, visible)
                 .eq(Article::getAuthorId, authorId);
 
-        List<Map<String, Object>> archiveList = articleMapper.selectListArchiveMonth(wrapper);
+        List<ArticleArchiveDTO> archiveList = articleMapper.selectListArchiveMonth(wrapper);
 
         return archiveList;
     }
@@ -198,7 +222,8 @@ public class ArticleServiceImpl extends AbstractService<Article> implements Arti
         article.setCreateTime(new Date());
 
         int result = articleMapper.insert(article);
-        articleSearchService.addArticleSearch(article);
+
+//        articleEsService.sa(article);
 
         if (result < 1) {
             log.error("【文章服务】添加文章出错");
@@ -216,7 +241,7 @@ public class ArticleServiceImpl extends AbstractService<Article> implements Arti
 
         // 存在则删除
         articleMapper.deleteById(articleId);
-        articleSearchService.deleteById(articleId);
+//        articleSearchService.deleteById(articleId);
     }
 
     @CacheEvict(value = "ArticleService::getById", key = "#articleDTO.getArticleId()")
@@ -234,7 +259,7 @@ public class ArticleServiceImpl extends AbstractService<Article> implements Arti
         article.setLastUpdate(new Date());
 
         articleMapper.updateById(article);
-        articleSearchService.updateById(article);
+//        articleSearchService.updateById(article);
     }
 
     @Override
@@ -272,6 +297,7 @@ public class ArticleServiceImpl extends AbstractService<Article> implements Arti
 
     /**
      * 判断文章是否存在
+     *
      * @param articleId
      * @return
      */

@@ -22,6 +22,11 @@
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>co.jratil</groupId>
+            <artifactId>blog-es</artifactId>
+            <version>1.0.0</version>
+        </dependency>
     </dependencies>
 
     <build>

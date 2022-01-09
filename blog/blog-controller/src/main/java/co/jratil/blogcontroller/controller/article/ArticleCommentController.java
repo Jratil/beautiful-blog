@@ -3,9 +3,9 @@ package co.jratil.blogcontroller.controller.article;
 import co.jratil.blogapi.entity.PageParam;
 import co.jratil.blogapi.entity.dataobject.Comment;
 import co.jratil.blogapi.entity.dto.CommentDTO;
-import co.jratil.blogapi.response.ResponseUtils;
-import co.jratil.blogapi.response.ResponseVO;
 import co.jratil.blogapi.service.CommentService;
+import co.jratil.blogcommon.response.ResponseUtils;
+import co.jratil.blogcommon.response.ResponseVO;
 import co.jratil.blogcontroller.controller.AbstractController;
 import co.jratil.blogsecurity.util.SecurityUtils;
 import com.github.pagehelper.PageInfo;
@@ -14,9 +14,8 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.dubbo.config.annotation.Reference;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -35,7 +34,7 @@ import java.util.List;
 @RequestMapping("/comment")
 public class ArticleCommentController extends AbstractController<Comment> {
 
-    @Reference
+    @DubboReference
     private CommentService commentService;
 
     @ApiOperation(value = "查找评论", notes = "根据评论id查找指定评论", httpMethod = "GET")

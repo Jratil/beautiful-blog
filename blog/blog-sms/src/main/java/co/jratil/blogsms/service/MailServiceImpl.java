@@ -1,10 +1,9 @@
 package co.jratil.blogsms.service;
 
 import co.jratil.blogapi.constant.VerifyCodeConstant;
-import co.jratil.blogapi.exception.GlobalException;
-import co.jratil.blogapi.enums.ResponseEnum;
 import co.jratil.blogapi.service.MailService;
-import co.jratil.blogapi.service.RedisService;
+import co.jratil.blogcommon.enums.ResponseEnum;
+import co.jratil.blogcommon.exception.GlobalException;
 import co.jratil.blogsms.constant.MailConstant;
 import co.jratil.blogsms.utils.VerifyCodeUtil;
 import com.aliyuncs.DefaultAcsClient;
@@ -16,11 +15,11 @@ import com.aliyuncs.http.MethodType;
 import com.aliyuncs.profile.DefaultProfile;
 import com.aliyuncs.profile.IClientProfile;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.dubbo.config.annotation.Reference;
 import org.apache.dubbo.config.annotation.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -37,8 +36,8 @@ import java.util.Scanner;
 @Service(interfaceClass = MailService.class)
 public class MailServiceImpl implements MailService {
 
-    @Reference
-    private RedisService redisService;
+    @Autowired
+    private RedisTemplate<String, String> redisTemplate;
 
     @Value("${mail.region_id}")
     private String RegionId;
@@ -97,7 +96,7 @@ public class MailServiceImpl implements MailService {
             SingleSendMailResponse httpResponse = client.getAcsResponse(request);
 
             // 验证码发送完再设置时间，如果在之前设置，发送验证码需要时间，则会倒是验证码提前过期
-            redisService.set(VerifyCodeConstant.REDIS_VERIFY_PREFIX + toMail, verifyCode, VerifyCodeConstant.VERIFY_CODE_EXPIRE);
+            redisTemplate.opsForValue().set(VerifyCodeConstant.REDIS_VERIFY_PREFIX + toMail, verifyCode, VerifyCodeConstant.VERIFY_CODE_EXPIRE);
 
         } catch (ClientException e) {
             log.error("【邮件服务】发送邮件失败，错误码={}, message={}", e.getErrCode(), e.getErrMsg());
@@ -111,7 +110,7 @@ public class MailServiceImpl implements MailService {
     private String generateCode(String toMail) {
         String verifyCode = VerifyCodeUtil.generateCode();
 
-        Object result = redisService.get(VerifyCodeConstant.REDIS_VERIFY_PREFIX + toMail);
+        Object result = redisTemplate.opsForValue().get(VerifyCodeConstant.REDIS_VERIFY_PREFIX + toMail);
         if (result != null) {
             log.error("【发送邮件】发送验证码过于频繁，接收mail={}", toMail);
             throw new GlobalException(ResponseEnum.VERIFY_CODE_QUICKLY);

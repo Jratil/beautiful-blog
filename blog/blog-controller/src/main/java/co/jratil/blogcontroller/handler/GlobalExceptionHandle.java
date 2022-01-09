@@ -1,8 +1,8 @@
 package co.jratil.blogcontroller.handler;
 
-import co.jratil.blogapi.exception.GlobalException;
-import co.jratil.blogapi.response.ResponseVO;
-import co.jratil.blogapi.response.ResponseUtils;
+import co.jratil.blogcommon.exception.GlobalException;
+import co.jratil.blogcommon.response.ResponseVO;
+import co.jratil.blogcommon.response.ResponseUtils;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 

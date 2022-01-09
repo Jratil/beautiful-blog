@@ -1,6 +1,7 @@
 package co.jratil.blogapi.service;
 
 import co.jratil.blogapi.entity.PageParam;
+import co.jratil.blogapi.entity.dto.ArticleArchiveDTO;
 import co.jratil.blogapi.entity.dto.ArticleDTO;
 import com.github.pagehelper.PageInfo;
 
@@ -15,7 +16,7 @@ public interface ArticleService {
 
     PageInfo<ArticleDTO> listByCategoryId(PageParam pageParam, Integer categoryId, boolean visible);
 
-    List<Map<String, Object>> listArchiveMonth(Integer authorId, boolean visible);
+    List<ArticleArchiveDTO> listArchiveMonth(Integer authorId, boolean visible);
 
     PageInfo<ArticleDTO> listByArchive(PageParam pageParam, String month, Integer authorId, boolean visible);
 

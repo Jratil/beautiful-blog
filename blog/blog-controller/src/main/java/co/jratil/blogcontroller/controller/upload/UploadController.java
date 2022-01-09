@@ -1,9 +1,9 @@
 package co.jratil.blogcontroller.controller.upload;
 
-import co.jratil.blogapi.enums.ResponseEnum;
-import co.jratil.blogapi.exception.GlobalException;
-import co.jratil.blogapi.response.ResponseUtils;
-import co.jratil.blogapi.response.ResponseVO;
+import co.jratil.blogcommon.enums.ResponseEnum;
+import co.jratil.blogcommon.exception.GlobalException;
+import co.jratil.blogcommon.response.ResponseUtils;
+import co.jratil.blogcommon.response.ResponseVO;
 import co.jratil.blogapi.service.UploadService;
 import co.jratil.blogcontroller.constant.UploadConstant;
 import co.jratil.blogcontroller.controller.AbstractController;
@@ -12,8 +12,8 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.dubbo.config.annotation.Reference;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/upload")
 public class UploadController extends AbstractController {
 
-    @Reference
+    @DubboReference
     private UploadService uploadService;
 
     @ApiOperation(value = "上传单张图片", notes = "上传单张图片，最大不超过2M，返回的data中为图片的链接", httpMethod = "POST")

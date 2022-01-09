@@ -1,9 +1,11 @@
 package co.jratil.blogapi.entity.dataobject;
 
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.io.Serializable;
 
+@TableName("t_author_follow")
 @Data
 public class AuthorFollow implements Serializable {
 

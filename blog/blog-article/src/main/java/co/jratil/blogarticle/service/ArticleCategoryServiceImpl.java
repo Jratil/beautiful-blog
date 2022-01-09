@@ -1,18 +1,18 @@
 package co.jratil.blogarticle.service;
 
 import co.jratil.blogapi.entity.PageParam;
-import co.jratil.blogapi.wrapper.VisibleWrapper;
 import co.jratil.blogapi.entity.dataobject.ArticleCategory;
-import co.jratil.blogapi.exception.GlobalException;
-import co.jratil.blogapi.enums.ResponseEnum;
 import co.jratil.blogapi.service.AbstractService;
 import co.jratil.blogapi.service.ArticleCategoryService;
+import co.jratil.blogapi.wrapper.VisibleWrapper;
 import co.jratil.blogarticle.mapper.ArticleCategoryMapper;
+import co.jratil.blogcommon.enums.ResponseEnum;
+import co.jratil.blogcommon.exception.GlobalException;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.dubbo.config.annotation.Service;
+import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -22,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-@Service(interfaceClass = ArticleCategoryService.class)
+@DubboService(interfaceClass = ArticleCategoryService.class)
 @Slf4j
 @Component
 public class ArticleCategoryServiceImpl extends AbstractService<ArticleCategory> implements ArticleCategoryService {

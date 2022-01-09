@@ -2,11 +2,11 @@ package co.jratil.blogcontroller.controller.article;
 
 import co.jratil.blogapi.entity.PageParam;
 import co.jratil.blogapi.entity.dataobject.ArticleCategory;
-import co.jratil.blogapi.exception.GlobalException;
-import co.jratil.blogapi.enums.ResponseEnum;
-import co.jratil.blogapi.response.ResponseVO;
-import co.jratil.blogapi.response.ResponseUtils;
 import co.jratil.blogapi.service.ArticleCategoryService;
+import co.jratil.blogcommon.enums.ResponseEnum;
+import co.jratil.blogcommon.exception.GlobalException;
+import co.jratil.blogcommon.response.ResponseUtils;
+import co.jratil.blogcommon.response.ResponseVO;
 import co.jratil.blogcontroller.controller.AbstractController;
 import co.jratil.blogsecurity.util.SecurityUtils;
 import com.github.pagehelper.PageInfo;
@@ -15,7 +15,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.dubbo.config.annotation.Reference;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -29,7 +29,7 @@ import java.util.Date;
 @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
 public class ArticleCategoryController extends AbstractController {
 
-    @Reference
+    @DubboReference
     private ArticleCategoryService categoryService;
 
     @ApiOperation(value = "查找类目", notes = "通过类目id来查找类目", httpMethod = "GET")

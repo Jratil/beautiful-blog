@@ -5,21 +5,21 @@ import co.jratil.blogapi.entity.dataobject.Article;
 import co.jratil.blogapi.entity.dataobject.Comment;
 import co.jratil.blogapi.entity.dto.AuthorDTO;
 import co.jratil.blogapi.entity.dto.CommentDTO;
-import co.jratil.blogapi.enums.ResponseEnum;
-import co.jratil.blogapi.exception.GlobalException;
 import co.jratil.blogapi.service.AuthorService;
 import co.jratil.blogapi.service.CommentService;
 import co.jratil.blogarticle.constant.ArticleConstant;
 import co.jratil.blogarticle.mapper.ArticleMapper;
 import co.jratil.blogarticle.mapper.CommentMapper;
+import co.jratil.blogcommon.enums.ResponseEnum;
+import co.jratil.blogcommon.exception.GlobalException;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.dubbo.config.annotation.Reference;
-import org.apache.dubbo.config.annotation.Service;
+import org.apache.dubbo.config.annotation.DubboReference;
+import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
  * @date 2020-01-02 21:53
  */
 @Slf4j
-@Service(interfaceClass = CommentService.class)
+@DubboService(interfaceClass = CommentService.class)
 @Component
 public class CommentServiceImpl implements CommentService {
 
@@ -46,7 +46,7 @@ public class CommentServiceImpl implements CommentService {
     @Autowired
     private ArticleMapper articleMapper;
 
-    @Reference
+    @DubboReference
     private AuthorService authorService;
 
     @Cacheable(value = "CommentService::getById", key = "#commentId")

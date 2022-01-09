@@ -2,13 +2,12 @@ package co.jratil.blogcontroller.controller.article;
 
 import co.jratil.blogapi.entity.PageParam;
 import co.jratil.blogapi.entity.dto.ArticleDTO;
-import co.jratil.blogapi.response.ResponseUtils;
-import co.jratil.blogapi.response.ResponseVO;
 import co.jratil.blogapi.service.ArticleService;
+import co.jratil.blogcommon.response.ResponseUtils;
+import co.jratil.blogcommon.response.ResponseVO;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
-import org.apache.dubbo.config.annotation.Reference;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -25,7 +24,7 @@ import javax.servlet.http.HttpServletResponse;
 @RestController
 public class CommonArticleController {
 
-    @Reference
+    @DubboReference
     private ArticleService  articleService;
 
     @RequestMapping("/")

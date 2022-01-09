@@ -3,6 +3,7 @@ server:
 
 dubbo:
   application:
+    id: blog-auth
     name: blog-auth
   registry:
     address: zookeeper://localhost:2181

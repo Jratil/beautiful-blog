@@ -2,29 +2,31 @@ package co.jratil.blogauth.service;
 
 import co.jratil.blogapi.constant.VerifyCodeConstant;
 import co.jratil.blogapi.entity.PageParam;
-import co.jratil.blogapi.entity.dataobject.*;
+import co.jratil.blogapi.entity.dataobject.ArticleCategory;
+import co.jratil.blogapi.entity.dataobject.Author;
+import co.jratil.blogapi.entity.dataobject.AuthorLogin;
+import co.jratil.blogapi.entity.dataobject.AuthorRole;
 import co.jratil.blogapi.entity.dto.AuthorDTO;
 import co.jratil.blogapi.entity.dto.AuthorForm;
-import co.jratil.blogapi.enums.UserRoleEnum;
-import co.jratil.blogapi.exception.GlobalException;
 import co.jratil.blogapi.service.AbstractService;
-import co.jratil.blogapi.service.RedisService;
+import co.jratil.blogapi.service.AuthorService;
 import co.jratil.blogauth.mapper.AuthorLoginMapper;
 import co.jratil.blogauth.mapper.AuthorMapper;
-import co.jratil.blogapi.enums.ResponseEnum;
-import co.jratil.blogapi.service.AuthorService;
+import co.jratil.blogcommon.enums.ResponseEnum;
+import co.jratil.blogcommon.enums.UserRoleEnum;
+import co.jratil.blogcommon.exception.GlobalException;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.dubbo.config.annotation.Reference;
-import org.apache.dubbo.config.annotation.Service;
+import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,7 +35,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service(interfaceClass = AuthorService.class)
+@DubboService(interfaceClass = AuthorService.class)
 @Component
 @Slf4j
 public class AuthorServiceImpl extends AbstractService implements AuthorService {
@@ -47,8 +49,8 @@ public class AuthorServiceImpl extends AbstractService implements AuthorService 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
-    @Reference
-    private RedisService redisService;
+    @Autowired
+    private RedisTemplate<String, String> redisTemplate;
 
     /**
      * 暂时废弃，使用spring security的登录过滤
@@ -299,7 +301,7 @@ public class AuthorServiceImpl extends AbstractService implements AuthorService 
     private void verifyCode(String account, String verifyCode) {
 
         //TODO----验证码开关代码
-        String redisVerifyCode = (String) redisService.get(VerifyCodeConstant.REDIS_VERIFY_PREFIX + account);
+        String redisVerifyCode = redisTemplate.opsForValue().get(VerifyCodeConstant.REDIS_VERIFY_PREFIX + account);
         if (!verifyCode.equals(redisVerifyCode)) {
             log.error("【用户注册】验证码不正确，verifyCode={}，redisCode={}", verifyCode, redisVerifyCode);
             log.error("redis的key==>{}", VerifyCodeConstant.REDIS_VERIFY_PREFIX + account);

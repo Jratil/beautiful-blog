@@ -2,6 +2,7 @@ package co.jratil.blogarticle.mapper;
 
 
 import co.jratil.blogapi.entity.dataobject.Article;
+import co.jratil.blogapi.entity.dto.ArticleArchiveDTO;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.toolkit.Constants;
@@ -17,7 +18,7 @@ public interface ArticleMapper extends BaseMapper<Article> {
             "${ew.customSqlSegment} " +
             "group by archive " +
             "order by archive desc")
-    List<Map<String, Object>> selectListArchiveMonth(@Param(Constants.WRAPPER) Wrapper wrapper);
+    List<ArticleArchiveDTO> selectListArchiveMonth(@Param(Constants.WRAPPER) Wrapper<Article> wrapper);
 
 //    @Select("select * from t_article " +
 //            "where date_format(create_time, '%Y年%m月') = #{month} and " +

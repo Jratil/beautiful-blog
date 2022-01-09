@@ -4,19 +4,19 @@ import co.jratil.blogapi.entity.PageParam;
 import co.jratil.blogcontroller.controller.AbstractController;
 import co.jratil.blogapi.entity.dto.AuthorDTO;
 import co.jratil.blogapi.entity.dto.AuthorForm;
-import co.jratil.blogapi.enums.ResponseEnum;
-import co.jratil.blogapi.response.ResponseVO;
-import co.jratil.blogapi.response.ResponseUtils;
+import co.jratil.blogcommon.enums.ResponseEnum;
+import co.jratil.blogcommon.response.ResponseVO;
+import co.jratil.blogcommon.response.ResponseUtils;
 import co.jratil.blogapi.service.AuthorService;
-import co.jratil.blogapi.exception.GlobalException;
+import co.jratil.blogcommon.exception.GlobalException;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.dubbo.config.annotation.Reference;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -31,7 +31,7 @@ import javax.servlet.http.HttpServletResponse;
 @RequestMapping("/auth")
 public class AuthorController extends AbstractController {
 
-    @Reference
+    @DubboReference
     private AuthorService authorService;
 
     @ApiOperation(value = "用户注册", notes = "用户注册", httpMethod = "POST")

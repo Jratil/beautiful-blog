@@ -1,7 +1,7 @@
 package co.jratil.blogcontroller.controller;
 
-import co.jratil.blogapi.exception.GlobalException;
-import co.jratil.blogapi.enums.ResponseEnum;
+import co.jratil.blogcommon.exception.GlobalException;
+import co.jratil.blogcommon.enums.ResponseEnum;
 import co.jratil.blogsecurity.util.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
